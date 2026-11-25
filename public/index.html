@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eaf3ff">
+<title>AiKoe</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eaf3ff;
+  --glass:rgba(255,255,255,.55); --glass-2:rgba(255,255,255,.78);
+  --line:rgba(60,120,215,.16); --line-2:rgba(37,99,235,.40);
+  --blue:#2f7bff; --blue-2:#1f5fe0; --sky:#5eb6ff;
+  --text:#10264a; --muted:#5f7798;
+  --danger:#e5484d; --warn:#a8630a;
+  --shadow:0 12px 40px rgba(40,90,180,.14), inset 0 1px 0 rgba(255,255,255,.95);
+  --glow:rgba(47,123,255,.45);
+  --radius:20px;
+}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"Plus Jakarta Sans",Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(900px 600px at 8% 0%,#ffffff 0%,rgba(255,255,255,0) 60%),
+    radial-gradient(800px 600px at 100% 100%,#d6e8ff 0%,rgba(214,232,255,0) 60%),
+    linear-gradient(160deg,#f6faff 0%,#e3efff 55%,#cfe2ff 100%);
+  background-attachment:fixed;
+  color:var(--text); overflow:hidden;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+}
+body::before,body::after{
+  content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(90px);pointer-events:none}
+body::before{width:540px;height:540px;background:#7fbcff;top:-170px;left:-130px;opacity:.55}
+body::after{width:480px;height:480px;background:#4f8dff;bottom:-190px;right:-130px;opacity:.35}
+button,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+::placeholder{color:#8aa0bd;opacity:1}
+.glass{background:var(--glass);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%)}
+
+.app{display:flex;height:100%;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+
+/* Logo */
+.logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,var(--sky),var(--blue-2));box-shadow:0 6px 18px var(--glow),inset 0 1px 0 rgba(255,255,255,.5)}
+.btn{padding:11px 14px;border-radius:13px;border:1px solid var(--line);background:var(--glass-2);transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600;color:var(--text)}
+.btn:hover{border-color:var(--line-2);box-shadow:0 6px 18px rgba(47,123,255,.18)}
+.btn.primary{background:linear-gradient(135deg,#4aa0ff,var(--blue-2));color:#fff;border:0;box-shadow:0 8px 20px rgba(47,123,255,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+.btn.primary:hover{filter:brightness(1.05);box-shadow:0 10px 26px rgba(47,123,255,.45),inset 0 1px 0 rgba(255,255,255,.4)}
+.model .note{display:block;color:var(--muted);font-size:11.5px;margin-top:3px}
+.miss{margin:2px 4px 6px;padding:9px 11px;border-radius:11px;font-size:12px;line-height:1.45;color:var(--warn);background:rgba(255,196,70,.14);border:1px dashed rgba(200,130,20,.45)}
+.search{width:100%;padding:11px 14px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.75);outline:none;transition:.2s}
+.search:focus{border-color:var(--line-2);box-shadow:0 0 0 4px rgba(47,123,255,.12)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 11px;border-radius:99px;font-size:12px;border:1px solid var(--line);color:var(--muted);background:rgba(255,255,255,.5)}
+.chip.on{background:rgba(47,123,255,.12);color:var(--blue-2);border-color:var(--line-2)}
+.models{flex:1;overflow-y:auto;padding:4px 10px 14px;display:flex;flex-direction:column;gap:6px}
+.model .mk{margin-right:6px}
+.model{text-align:left;padding:10px 12px;border-radius:13px;border:1px solid transparent;transition:.15s;width:100%}
+.model:hover{background:rgba(255,255,255,.7)}
+.model.on{background:rgba(255,255,255,.9);border-color:var(--line-2);box-shadow:0 6px 16px rgba(47,123,255,.14)}
+.model b{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.model small{color:var(--muted);font-size:11.5px;display:flex;gap:8px;align-items:center;margin-top:3px;flex-wrap:wrap}
+.tag{padding:1px 7px;border-radius:6px;background:rgba(47,123,255,.12);color:var(--blue-2);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+.tag.beta{background:rgba(255,190,50,.2);color:var(--warn)}
+.empty-models{color:var(--muted);text-align:center;padding:26px 10px;font-size:13px}
+
+/* Main */
+.main{flex:1;min-width:0;border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden}
+.top{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.icon{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;font-size:18px;flex:none}
+.cur{min-width:0;flex:1}
+.cur b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cur small{color:var(--muted);font-size:12px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue);margin-right:6px}
+
+.feed{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
+.welcome{margin:auto;text-align:center;max-width:520px;padding:20px}
+.welcome .logo{width:64px;height:64px;font-size:28px;margin:0 auto 18px;border-radius:21px}
+.welcome h2{font-size:26px;margin-bottom:8px}
+.welcome p{color:var(--muted);line-height:1.6}
+.sugs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
+.sugs button{padding:9px 14px;border-radius:99px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.65);font-size:13px;transition:.2s;box-shadow:0 4px 12px rgba(40,90,180,.08)}
+.sugs button:hover{border-color:var(--line-2);color:var(--blue-2);background:#fff}
+
+.msg{display:flex;gap:10px;max-width:880px;width:100%;margin:0 auto}
+.msg.user{justify-content:flex-end}
+.av{width:32px;height:32px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:13px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--sky),var(--blue-2));box-shadow:0 4px 12px rgba(47,123,255,.3)}
+.bubble{padding:12px 15px;border-radius:17px;line-height:1.6;max-width:min(100%,720px);word-wrap:break-word;overflow-wrap:anywhere;white-space:pre-wrap;font-size:15px}
+.user .bubble{background:linear-gradient(135deg,#4aa0ff,#2563eb);color:#fff;border:1px solid rgba(255,255,255,.35);border-bottom-right-radius:5px;box-shadow:0 8px 22px rgba(47,123,255,.28)}
+.user .bubble a{color:#fff;text-decoration:underline}
+.bot .bubble{background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);border-bottom-left-radius:5px;white-space:normal;box-shadow:0 6px 20px rgba(40,90,180,.08)}
+.bot .txt{white-space:pre-wrap}
+.bubble img,.bubble video{max-width:100%;border-radius:12px;display:block;margin-top:8px;border:1px solid var(--line)}
+.bubble audio{width:100%;margin-top:8px}
+.bubble a{color:var(--blue-2)}
+.meta{font-size:11.5px;color:var(--muted);margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.meta .dl{margin-left:auto;padding:5px 11px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--blue-2);font-size:12px;font-weight:600;transition:.2s}
+.meta .dl:hover{border-color:var(--line-2);box-shadow:0 4px 14px rgba(47,123,255,.22)}
+.meta .dl:disabled{opacity:.6;cursor:wait}
+.dbg{margin-top:10px;font-size:12px;color:var(--muted)}
+.dbg summary{cursor:pointer;color:var(--warn)}
+.dbg pre{margin-top:6px;padding:10px;border-radius:10px;background:rgba(255,255,255,.7);border:1px solid var(--line);max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-all;font:11.5px/1.5 ui-monospace,Menlo,Consolas,monospace;color:var(--text)}
+.err{color:var(--danger)}
+.bar{height:4px;background:rgba(47,123,255,.14);border-radius:9px;overflow:hidden;margin-top:10px;min-width:180px}
+.bar i{display:block;height:100%;width:8%;background:linear-gradient(90deg,var(--sky),var(--blue-2));transition:width .5s;box-shadow:0 0 12px var(--glow)}
+.typing span{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:var(--blue);animation:b 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+.composer{padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.box{max-width:880px;margin:0 auto;display:flex;gap:10px;align-items:flex-end;padding:8px;border-radius:20px;border:1px solid rgba(255,255,255,.95);background:rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(40,90,180,.12);transition:.2s}
+.btns{display:flex;flex-direction:column;gap:8px;flex:none}
+.box:focus-within{border-color:var(--line-2);box-shadow:0 0 0 4px rgba(47,123,255,.12),0 8px 28px rgba(47,123,255,.16)}
+.box textarea{scrollbar-width:none;-ms-overflow-style:none;flex:1;resize:none;border:0;background:none;outline:none;padding:9px 10px;min-height:calc(3 * 1.5em + 18px);max-height:260px;line-height:1.5;font-size:15px}
+.send{width:32px;height:32px;border-radius:10px;flex:none;display:grid;place-items:center;background:none;border:0;color:var(--blue);font-size:15px;font-weight:800;transition:.2s}
+.send:hover:not(:disabled){text-shadow:0 0 12px var(--glow);transform:scale(1.12)}
+.send:disabled{opacity:.4;cursor:not-allowed}
+.box textarea::-webkit-scrollbar{display:none;width:0;height:0}
+.hint{text-align:center;font-size:11px;color:var(--muted);margin-top:8px}
+
+
+/* Code & preview */
+.cb{margin:10px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(240,247,255,.85);text-align:left}
+.cb-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;background:rgba(47,123,255,.07);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.cb-tabs,.cb-acts{display:flex;gap:4px;flex-wrap:wrap}
+.cb-tab,.cb-btn{padding:5px 10px;border-radius:8px;font-size:12px;color:var(--muted);border:1px solid transparent}
+.cb-tab.on{background:#fff;color:var(--blue-2);border-color:var(--line-2)}
+.cb-btn{border-color:var(--line)}
+.cb-btn:hover,.cb-tab:hover{color:var(--blue-2);border-color:var(--line-2)}
+.cb-lang{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding-left:4px}
+.cb pre{margin:0;padding:14px;overflow:auto;max-height:480px;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#1b3560;white-space:pre;tab-size:2}
+[hidden]{display:none!important}
+.cb-frame{width:100%;height:480px;border:0;background:#fff;display:block}
+.cb-err{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 12px;font-size:12px;color:var(--danger);border-top:1px solid var(--line);background:rgba(229,72,77,.08);white-space:pre-wrap;word-break:break-word}
+.bot .bubble.wide{flex:1;min-width:0;max-width:100%}
+.ic{padding:1px 6px;border-radius:6px;background:rgba(47,123,255,.1);color:var(--blue-2);font:13px ui-monospace,SFMono-Regular,Menlo,monospace}
+.fs{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;background:rgba(228,239,255,.97);padding-top:env(safe-area-inset-top)}
+.fs .cb-head{border-radius:0}
+.fs iframe{flex:1;width:100%;border:0;background:#fff;padding-bottom:env(safe-area-inset-bottom)}
+
+
+/* Attachments */
+.attach{width:32px;height:32px;border-radius:10px;flex:none;display:grid;place-items:center;border:0;background:none;font-size:20px;line-height:1;color:var(--blue);transition:.2s}
+.imgbar{max-width:880px;margin:0 auto 8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.imgbar[hidden]{display:none}
+.imgbar select{margin-left:6px;padding:5px 8px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.8);color:var(--text);font:inherit}
+.imgbar select option{background:#fff;color:var(--text)}
+.imgbar select:disabled{opacity:.55;cursor:not-allowed}
+.imgbar label[hidden]{display:none}
+.refinfo{margin-left:auto;font-size:12px;color:var(--muted)}
+.attach:disabled{opacity:.35;cursor:not-allowed;transform:none;text-shadow:none}
+.attach.on{text-shadow:0 0 12px var(--glow)}
+.attach:hover{text-shadow:0 0 12px var(--glow);transform:scale(1.12)}
+.tray{max-width:880px;margin:0 auto 10px;display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.att{position:relative;flex:none;display:flex;align-items:center;gap:8px;padding:6px 30px 6px 6px;border-radius:13px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(40,90,180,.08);max-width:230px}
+.att.bad{border-color:rgba(229,72,77,.5)}
+.att img,.ficon{width:40px;height:40px;border-radius:9px;object-fit:cover;flex:none}
+.ficon{display:grid;place-items:center;background:rgba(47,123,255,.1);font-size:20px}
+.ainfo{min-width:0}
+.ainfo b{display:block;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.ainfo small{font-size:11px;color:var(--muted)}
+.att.bad small{color:var(--danger)}
+.ax{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;font-size:11px;color:var(--muted);background:rgba(255,255,255,.85)}
+.ax:hover{color:var(--danger)}
+.att-note{max-width:880px;margin:0 auto 8px;font-size:12px;color:var(--warn);line-height:1.4}
+.ufiles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.ufiles img{max-width:160px;max-height:140px;border-radius:10px;border:1px solid rgba(255,255,255,.6);display:block;margin:0}
+.ufile{padding:6px 10px;border-radius:9px;background:rgba(255,255,255,.22);font-size:12.5px}
+.main.drop{outline:2px dashed var(--blue);outline-offset:-10px}
+
+/* Riwayat */
+.modal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:16px;background:rgba(30,60,120,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.modal-card{width:min(520px,100%);max-height:min(640px,86vh);display:flex;flex-direction:column;border-radius:var(--radius);border:1px solid rgba(255,255,255,.95);background:rgba(250,252,255,.88);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:0 24px 70px rgba(30,70,160,.28),inset 0 1px 0 #fff;overflow:hidden}
+.modal-head{display:flex;align-items:center;gap:10px;padding:12px 14px 12px 18px;border-bottom:1px solid var(--line)}
+.modal-head b{flex:1;font-size:15px}
+.modal-head .search{flex:1;min-width:0}
+#modelModal .models{min-height:120px}
+.modal-head .icon{width:36px;height:36px;font-size:15px}
+.hist-list{overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+.hitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;border:1px solid transparent;cursor:pointer;transition:.15s}
+.hitem:hover,.hitem:focus-visible{background:rgba(255,255,255,.8);outline:none}
+.hitem.on{background:#fff;border-color:var(--line-2);box-shadow:0 6px 16px rgba(47,123,255,.14)}
+.hitem .hi{font-size:18px;flex:none}
+.hitem .ht{flex:1;min-width:0}
+.hitem .ht b{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hitem .ht small{color:var(--muted);font-size:11.5px}
+.hdel{flex:none;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);color:var(--muted);font-size:13px}
+.hdel:hover{color:var(--danger);border-color:rgba(229,72,77,.5)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:rgba(47,110,220,.25);border-radius:9px}
+
+/* Mobile */
+@media (max-width:860px){
+  .app{padding:0;gap:0}
+  .main{border-radius:0;border:0}
+  .icon{display:grid}
+  .top{padding-top:calc(12px + env(safe-area-inset-top))}
+  .av{display:none}
+  .hint{display:none}
+  .bubble{font-size:14.5px}
+  .cb-frame{height:360px}
+}
+
+/* Ikon tanpa bingkai */
+.icon,.icon.glass,#hist,#clear,#msearch,#newChat,.hdel{border:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+#hist,#clear,#msearch,#newChat{padding:6px 8px;font-size:18px;line-height:1}
+.icon:hover,#hist:hover,#clear:hover,#msearch:hover,#newChat:hover,.hdel:hover{box-shadow:none;text-shadow:0 0 12px var(--glow)}
+.hdel:hover{text-shadow:0 0 10px rgba(229,72,77,.6)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <main class="main glass">
+    <header class="top">
+      <div class="cur"><b id="curName">Memuat…</b></div>
+      <button class="btn" id="newChat" title="Chat baru" aria-label="Chat baru">＋</button>
+      <button class="btn" id="msearch" title="Cari model (Ctrl+K)" aria-label="Cari model">🔍</button>
+      <button class="btn" id="hist" title="Riwayat percakapan" aria-label="Riwayat percakapan">🕘</button>
+      <button class="btn" id="clear" title="Bersihkan layar (riwayat tetap tersimpan)" aria-label="Bersihkan layar">🗑</button>
+    </header>
+    <section class="feed" id="feed"></section>
+    <footer class="composer">
+      <div class="tray" id="tray" hidden></div>
+      <div class="att-note" id="attNote" hidden></div>
+      <div class="imgbar" id="imgBar" hidden>
+        <label>Rasio <select id="selRatio"></select></label>
+        <label id="lRes"><span id="lResT">Kualitas</span> <select id="selQ"></select></label>
+        <label id="lQ" hidden>Kualitas <select id="selQP"></select></label>
+        <span class="refinfo" id="imgRef"></span>
+      </div>
+      <div class="imgbar" id="vidBar" hidden>
+        <label>Rasio <select id="selVRatio"></select></label>
+        <label>Durasi <select id="selVDur"></select></label>
+        <label id="lVRes" hidden>Kualitas <select id="selVRes"></select></label>
+        <span class="refinfo" id="vidRef"></span>
+      </div>
+      <div class="box">
+        <textarea id="input" rows="3" placeholder="Tulis pesan…" enterkeyhint="send"></textarea>
+        <div class="btns">
+          <button class="attach" id="attach" type="button" aria-label="Lampirkan file" title="Lampirkan referensi (gambar, dokumen, dll.)">＋</button>
+          <input type="file" id="file" multiple hidden>
+          <button class="send" id="send" aria-label="Kirim">➤</button>
+        </div>
+      </div>
+      <div class="hint">Enter untuk kirim · Shift+Enter baris baru</div>
+    </footer>
+  </main>
+</div>
+
+<div class="modal" id="modelModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Cari model">
+    <div class="modal-head">
+      <input class="search" id="q" placeholder="Cari model (chat, gambar, video)…" autocomplete="off">
+      <button class="icon glass" id="mClose" type="button" aria-label="Tutup">✕</button>
+    </div>
+    <div class="models" id="models"></div>
+  </div>
+</div>
+
+<div class="modal" id="histModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Riwayat percakapan">
+    <div class="modal-head">
+      <b>🕘 Riwayat percakapan</b>
+      <button class="cb-btn" id="histClear" type="button">Hapus semua</button>
+      <button class="icon glass" id="histClose" type="button" aria-label="Tutup">✕</button>
+    </div>
+    <div class="hist-list" id="histList"></div>
+  </div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+const state = {
+  models: [], imageModels: [], query: '', attachments: [],
+  modelId: store.get('aichat.model', null),
+  messages: store.get('aichat.messages', []),
+  busy: false, imgOpts: Object.assign({ ratio: '', quality: '', q: '' }, store.get('aichat.imgopts', {})),
+  category: store.get('aichat.cat', 'chat'), imageList: [], imageMissing: [], imageModelId: store.get('aichat.imgmodel', null),
+};
+state.videoList = []; state.videoModelId = store.get('aichat.vidmodel', null);
+state.vidOpts = Object.assign({ ratio: '', dur: '', res: '' }, store.get('aichat.vidopts', {}));
+const VID_SUGGESTIONS = ['Drone terbang di atas sawah berkabut saat matahari terbit, sinematik, 16:9', 'Kucing berlari di taman, gerakan lambat, 5 detik', 'Animasi logo kedai kopi dengan uap mengepul, 1:1'];
+const FACE_NOTE = 'Use the person in the provided reference image as the subject. Preserve their exact face, facial features, face shape, skin tone, hairstyle and identity so the result clearly looks like the same person.';
+const IMG_SUGGESTIONS = ['Kucing oranye duduk di jendela saat hujan, gaya sinematik, 16:9', 'Logo minimalis kedai kopi, latar putih, 1:1', 'Poster konser musik neon futuristik, 9:16, kualitas tinggi'];
+const SUGGESTIONS = ['Jelaskan cara kerja AI dengan sederhana', 'Buatkan caption Instagram untuk kedai kopi', 'Ide nama brand teknologi'];
+
+const cur = () => state.models.find((m) => m.model_id === state.modelId);
+/* ---------- Riwayat percakapan ---------- */
+const HIST_KEY = 'aichat.history', HIST_MAX = 30;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+state.history = store.get(HIST_KEY, []);
+state.convId = store.get('aichat.convid', null);
+
+function persistHistory() { // jika kuota localStorage penuh, buang percakapan terlama sampai muat
+  for (;;) {
+    try { localStorage.setItem(HIST_KEY, JSON.stringify(state.history)); return; }
+    catch { if (state.history.length <= 1) return; state.history.pop(); }
+  }
+}
+function save() {
+  const msgs = state.messages.filter((m) => !m.pending).slice(-60).map((m) => (m.files ? { ...m, files: m.files.map(({ preview, ...f }) => f) } : m));
+  store.set('aichat.messages', msgs);
+  if (!msgs.length) return;
+  if (!state.convId) { state.convId = uid(); store.set('aichat.convid', state.convId); }
+  const first = msgs.find((m) => m.role === 'user');
+  const title = ((first && first.text) || 'Percakapan').replace(/\s+/g, ' ').trim().slice(0, 60);
+  const rec = { id: state.convId, title, ts: Date.now(), cat: state.category, messages: msgs };
+  const i = state.history.findIndex((h) => h.id === rec.id);
+  if (i >= 0) state.history[i] = rec; else state.history.unshift(rec);
+  state.history.sort((a, b) => b.ts - a.ts); state.history = state.history.slice(0, HIST_MAX);
+  persistHistory();
+}
+
+/* ---------- Urutan: terbaru -> terlama ---------- */
+// Prioritas: tanggal rilis dari API (jika ada), lalu nomor versi di nama model (mis. 2.1 > 2 > 1.5), lalu nama.
+const DATE_FIELDS = ['released_at', 'release_date', 'released', 'created_at', 'added_at', 'published_at', 'updated_at', 'created'];
+const dateOf = (m) => { for (const f of DATE_FIELDS) { const t = typeof m[f] === 'number' ? (m[f] < 1e12 ? m[f] * 1000 : m[f]) : Date.parse(m[f]); if (t > 0) return t; } return 0; };
+const verOf = (m) => { // versi tertinggi di nama, mis. "Claude Opus 4.5" -> [4,5]; nama tanpa angka -> [0]
+  const hits = String(m.name || m.model_id).match(/\d+(?:\.\d+)*/g) || [];
+  return hits.map((s) => s.split('.').map(Number)).sort((a, b) => cmpVer(b, a))[0] || [0];
+};
+const cmpVer = (a, b) => { for (let i = 0; i < Math.max(a.length, b.length); i++) { const d = (a[i] || 0) - (b[i] || 0); if (d) return d; } return 0; };
+const byNewest = (a, b) => dateOf(b) - dateOf(a) || cmpVer(verOf(b), verOf(a)) || String(a.name).localeCompare(String(b.name));
+const newestOf = (m) => (m._variants || [m]).slice().sort(byNewest)[0]; // keluarga model: pakai varian terbaru
+
+/* ---------- Models ---------- */
+async function loadModels() {
+  try {
+    const r = await fetch('/api/models');
+    const j = await r.json();
+    if (!r.ok) throw new Error(j?.error?.message || 'Gagal memuat model');
+    const seen = new Set();
+    state.models = (j.models || [])
+      .filter((m) => !m.type || m.type === 'text')
+      .sort(byNewest)
+      .filter((m) => { const k = String(m.name || m.model_id).trim().toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+    state.modelsError = '';
+    if (!cur()) state.modelId = state.models[0]?.model_id || null;
+    store.set('aichat.model', state.modelId);
+  } catch (e) {
+    state.modelsError = e.message || 'Gagal memuat model';
+  }
+  renderModels(); renderHeader();
+  await Promise.all([loadImageModels(), loadVideoModels()]);
+  setCategory(state.category);
+  logCaps();
+}
+
+function renderModels() {
+  const box = $('#models'); box.replaceChildren();
+  const q = state.query.trim().toLowerCase();
+  if (!q) return box.append(el('div', 'empty-models', 'Ketik nama model untuk mencari'));
+  const hay = (m) => [m.name, m.provider ?? '', m.model_id, ...(m._variants || []).map((v) => v.name)].join(' ').toLowerCase();
+  const groups = [
+    { kind: 'chat', icon: '💬', list: state.models, cur: cur(), pick: (m) => { state.modelId = m.model_id; store.set('aichat.model', m.model_id); } },
+    { kind: 'image', icon: '🎨', list: state.imageList, cur: curImage(), pick: (m) => { state.imageModelId = m.model_id; store.set('aichat.imgmodel', m.model_id); } },
+    { kind: 'video', icon: '🎬', list: state.videoList, cur: curVideo(), pick: (m) => { state.videoModelId = m.model_id; store.set('aichat.vidmodel', m.model_id); } },
+  ];
+  let n = 0;
+  for (const g of groups) {
+    for (const m of g.list.filter((x) => hay(x).includes(q))) {
+      n++;
+      const on = state.category === g.kind && m.model_id === g.cur?.model_id;
+      const b = el('button', 'model' + (on ? ' on' : '')); b.type = 'button';
+      const t = el('b', '', g.kind === 'video' ? (m._label || m.name) : m.name);
+      t.prepend(el('span', 'mk', g.icon));
+      b.append(t);
+      b.onclick = () => { g.pick(m); setCategory(g.kind); closeModelSearch(); };
+      box.append(b);
+    }
+  }
+  if (n) return;
+  if (!state.models.length && state.modelsError) {
+    box.append(el('div', 'empty-models err', state.modelsError));
+    const rb = el('button', 'btn', '↻ Coba lagi'); rb.type = 'button';
+    rb.onclick = () => { box.replaceChildren(el('div', 'empty-models', 'Memuat model…')); loadModels(); };
+    return box.append(rb);
+  }
+  box.append(el('div', 'empty-models', 'Model tidak ditemukan'));
+}
+
+function setCategory(c) {
+  if (!['chat', 'image', 'video'].includes(c)) c = 'chat';
+  state.category = c; store.set('aichat.cat', c);
+  $('#imgBar').hidden = c !== 'image'; $('#vidBar').hidden = c !== 'video';
+  $('#input').placeholder = c === 'image' ? 'Deskripsikan gambar yang ingin dibuat…' : c === 'video' ? 'Deskripsikan video yang ingin dibuat…' : 'Tulis pesan…';
+  renderModels(); renderHeader(); if (!state.messages.length) renderFeed();
+}
+
+function renderHeader() {
+  const c = state.category, m = c === 'image' ? curImage() : c === 'video' ? curVideo() : cur();
+  $('#curName').textContent = m ? (c === 'image' ? '🎨 ' : c === 'video' ? '🎬 ' : '') + (c === 'video' ? (m._label || m.name) : m.name) : 'AiKoe';
+  if (typeof updateNote === 'function') updateNote();
+  if (typeof renderTray === 'function') renderTray(); // juga menyegarkan panel kontrol sesuai model aktif
+}
+
+
+/* ---------- Rich text, code & preview ---------- */
+// <pure>
+function parseRich(text) {
+  const parts = [];
+  // HTML mentah tanpa pagar ```
+  if (!text.includes('```')) {
+    const m = text.match(/<!doctype html[\s\S]*?(<\/html>|$)/i) || text.match(/<html[\s>][\s\S]*?(<\/html>|$)/i);
+    if (m) {
+      const before = text.slice(0, m.index), after = text.slice(m.index + m[0].length);
+      if (before.trim()) parts.push({ t: 'text', v: before });
+      parts.push({ t: 'code', lang: 'html', v: m[0].trim() });
+      if (after.trim()) parts.push({ t: 'text', v: after });
+      return parts;
+    }
+  }
+  const re = /```([\w+#-]*)[^\n]*\n([\s\S]*?)(```|$)/g;
+  let last = 0, m;
+  while ((m = re.exec(text))) {
+    if (m.index > last) parts.push({ t: 'text', v: text.slice(last, m.index) });
+    parts.push({ t: 'code', lang: (m[1] || '').toLowerCase(), v: m[2].replace(/\n$/, '') });
+    last = re.lastIndex;
+    if (m[3] === '') break;
+  }
+  if (last < text.length) parts.push({ t: 'text', v: text.slice(last) });
+  return parts;
+}
+const isHtmlCode = (lang, code) => ['html', 'htm', 'svg'].includes(lang) || /^\s*(<!doctype html|<html[\s>]|<svg[\s>])/i.test(code);
+const usesDom = (code) => /document\.|getContext|requestAnimationFrame|addEventListener|innerHTML/.test(code);
+
+// Sandbox tanpa allow-same-origin membuat localStorage melempar error -> game blank. Shim ini menggantinya dengan memori sementara + melaporkan error.
+const SHIM = '<script>(function(){function mk(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}};["localStorage","sessionStorage"].forEach(function(n){try{window[n].getItem("x")}catch(e){try{Object.defineProperty(window,n,{value:mk(),configurable:true})}catch(_){}}});function r(m){try{parent.postMessage({aichat:1,err:String(m)},"*")}catch(_){}}window.addEventListener("error",function(e){r((e.message||"Error")+(e.lineno?" (baris "+e.lineno+")":""))});window.addEventListener("unhandledrejection",function(e){r(e.reason&&e.reason.message||e.reason)})})();(function(){var C=window.AudioContext||window.webkitAudioContext;if(!C)return;var list=[];function W(a){var c=a===undefined?new C():new C(a);list.push(c);return c}W.prototype=C.prototype;window.AudioContext=W;window.webkitAudioContext=W;function go(){list.forEach(function(c){if(c.state==="suspended"){try{c.resume()}catch(_){}}})}["pointerdown","keydown","touchstart","touchend","click"].forEach(function(t){window.addEventListener(t,go,true)})})()<\/script>';
+function withShim(d) {
+  if (/<head[^>]*>/i.test(d)) return d.replace(/<head[^>]*>/i, (m) => m + SHIM);
+  if (/<html[^>]*>/i.test(d)) return d.replace(/<html[^>]*>/i, (m) => m + SHIM);
+  return SHIM + d;
+}
+function buildDoc(code, lang, css, js) {
+  let d = code, merged = false;
+  if (lang === 'svg' || /^\s*<svg[\s>]/i.test(d)) {
+    d = '<!doctype html><meta charset="utf-8"><body style="margin:0;display:grid;place-items:center;min-height:100vh;background:#f2f7ff">' + d;
+  } else if (!/<html[\s>]|<!doctype/i.test(d)) {
+    d = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + d + '</body></html>';
+  }
+  if (css && !/<style[\s>]/i.test(d)) { merged = true; d = /<\/head>/i.test(d) ? d.replace(/<\/head>/i, () => '<style>' + css + '</style></head>') : '<style>' + css + '</style>' + d; }
+  if (js && !/<script[\s>]/i.test(d)) { merged = true; d = /<\/body>/i.test(d) ? d.replace(/<\/body>/i, () => '<script>' + js + '<\/script></body>') : d + '<script>' + js + '<\/script>'; }
+  return { doc: d, merged, run: withShim(d) };
+}
+// </pure>
+
+function renderInline(parent, text) {
+  for (const seg of text.split(/(`[^`\n]+`|\*\*[^*\n]+\*\*)/g)) {
+    if (!seg) continue;
+    if (seg.length > 2 && seg.startsWith('`') && seg.endsWith('`')) parent.append(el('code', 'ic', seg.slice(1, -1)));
+    else if (seg.length > 4 && seg.startsWith('**') && seg.endsWith('**')) parent.append(el('strong', '', seg.slice(2, -2)));
+    else parent.append(document.createTextNode(seg));
+  }
+}
+
+async function copyText(text, btn) {
+  try { await navigator.clipboard.writeText(text); }
+  catch { const t = el('textarea'); t.value = text; t.style.cssText = 'position:fixed;opacity:0'; document.body.append(t); t.select(); try { document.execCommand('copy'); } catch {} t.remove(); }
+  if (btn) { const o = btn.textContent; btn.textContent = '✓ Tersalin'; setTimeout(() => (btn.textContent = o), 1600); }
+}
+
+const SANDBOX = 'allow-scripts allow-forms allow-pointer-lock allow-modals';
+const ALLOW = 'autoplay *; fullscreen *; gamepad *; accelerometer *; gyroscope *';
+
+function openFullscreen(doc, title) {
+  const o = el('div', 'fs'); const head = el('div', 'cb-head');
+  head.append(el('span', 'cb-lang', title || 'Preview'));
+  const close = el('button', 'cb-btn', '✕ Tutup'); head.append(close);
+  const f = el('iframe'); f.setAttribute('sandbox', SANDBOX); f.setAttribute('allow', ALLOW); f.srcdoc = doc;
+  o.append(head, f); document.body.append(o);
+  const done = () => { o.remove(); document.removeEventListener('keydown', esc); };
+  const esc = (e) => { if (e.key === 'Escape') done(); };
+  close.onclick = done; document.addEventListener('keydown', esc);
+}
+
+function codeBlock(lang, code, pv) {
+  const box = el('div', 'cb'), head = el('div', 'cb-head'), acts = el('div', 'cb-acts');
+  const pre = el('pre'); pre.append(el('code', '', code));
+  const copyBtn = el('button', 'cb-btn', '⧉ Salin');
+  copyBtn.onclick = () => copyText(pv && pv.merged ? pv.doc : code, copyBtn);
+
+  if (pv) {
+    const tabs = el('div', 'cb-tabs');
+    const tp = el('button', 'cb-tab on', '▶ Preview'), tc = el('button', 'cb-tab', '</> Code');
+    tabs.append(tp, tc);
+    const frame = el('iframe', 'cb-frame');
+    frame.setAttribute('sandbox', SANDBOX); frame.setAttribute('allow', ALLOW);
+    frame.title = 'Preview';
+    const err = el('div', 'cb-err'); err.hidden = true;
+    const errTxt = el('span'); const fixBtn = el('button', 'cb-btn', '🛠 Minta AI perbaiki'); err.append(errTxt, fixBtn);
+    let lastErr = '';
+    fixBtn.onclick = () => {
+      if (state.busy) return;
+      const prompt = 'Kode HTML berikut menghasilkan error saat dijalankan di browser:\n' + lastErr + '\n\nKode saat ini:\n```html\n' + pv.doc.slice(0, 60000) + '\n```\n\nTemukan penyebab error, perbaiki bug-nya (pastikan semua objek/properti sudah diinisialisasi sebelum dipakai), lalu berikan ulang SATU file HTML lengkap yang sudah diperbaiki di satu blok ```html. Jelaskan perbaikannya dalam 1-2 kalimat.';
+      send({ text: '🛠 Perbaiki error: ' + lastErr, prompt });
+    };
+    const load = () => { lastErr = ''; err.hidden = true; frame.srcdoc = pv.run; };
+    load(); pre.hidden = true;
+    const onMsg = (e) => {
+      if (!box.isConnected) return window.removeEventListener('message', onMsg);
+      if (e.source === frame.contentWindow && e.data && e.data.aichat) { lastErr = String(e.data.err); errTxt.textContent = '⚠ Error pada kode: ' + lastErr + '  '; err.hidden = false; }
+    };
+    window.addEventListener('message', onMsg);
+    const show = (p) => { frame.hidden = !p; err.hidden = !(p && lastErr); pre.hidden = p; tp.classList.toggle('on', p); tc.classList.toggle('on', !p); };
+    tp.onclick = () => show(true); tc.onclick = () => show(false);
+    const re = el('button', 'cb-btn', '↻'); re.title = 'Muat ulang'; re.onclick = () => { load(); show(true); };
+    const fsb = el('button', 'cb-btn', '⛶ Layar penuh'); fsb.onclick = () => openFullscreen(pv.run, 'Preview');
+    const dl = el('button', 'cb-btn', '⬇ HTML');
+    dl.onclick = () => { const a = el('a'); a.href = URL.createObjectURL(new Blob([pv.doc], { type: 'text/html' })); a.download = 'aichat.html'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+    acts.append(re, fsb, dl, copyBtn);
+    head.append(tabs, acts); box.append(head, frame, err, pre);
+  } else {
+    head.append(el('span', 'cb-lang', lang || 'code'), copyBtn);
+    box.append(head, pre);
+  }
+  return box;
+}
+
+function renderRich(parent, text) {
+  const parts = parseRich(text);
+  const pick = (langs) => parts.filter((p) => p.t === 'code' && langs.includes(p.lang)).map((p) => p.v).join('\n');
+  const css = pick(['css']), js = pick(['js', 'javascript']);
+  const hasHtml = parts.some((p) => p.t === 'code' && isHtmlCode(p.lang, p.v));
+  let jsDone = false;
+  for (const p of parts) {
+    if (p.t === 'text') {
+      const v = p.v.replace(/^\n+|\n+$/g, '');
+      if (v) { const d = el('div', 'txt'); renderInline(d, v); parent.append(d); }
+      continue;
+    }
+    let pv = null;
+    if (isHtmlCode(p.lang, p.v)) pv = buildDoc(p.v, p.lang, css, js);
+    else if (!hasHtml && !jsDone && ['js', 'javascript'].includes(p.lang) && usesDom(js)) { pv = buildDoc('', 'html', css, js); jsDone = true; }
+    parent.append(codeBlock(p.lang, p.v, pv));
+  }
+}
+
+/* ---------- Rendering ---------- */
+const URL_RE = /^(https?:\/\/|data:image\/)/i;
+// Ambil URL dari satu output model, apa pun nama field-nya (url / image_url / value / asset.url / b64_json ...)
+function outUrl(o) {
+  if (typeof o === 'string') return URL_RE.test(o) ? o : '';
+  if (!o || typeof o !== 'object') return '';
+  for (const k of ['url', 'image_url', 'imageUrl', 'src', 'value', 'href', 'uri', 'download_url']) {
+    const v = o[k];
+    if (typeof v === 'string' && URL_RE.test(v)) return v;
+    if (v && typeof v === 'object' && typeof v.url === 'string' && URL_RE.test(v.url)) return v.url;
+  }
+  if (o.asset && typeof o.asset.url === 'string') return o.asset.url;
+  if (typeof o.b64_json === 'string') return 'data:image/png;base64,' + o.b64_json;
+  return '';
+}
+// Ambil teks dari output model teks, apa pun bentuknya (string, {text|content|value|...}, array blok konten)
+const textOf = (x, d = 0) => {
+  if (x == null || d > 4) return '';
+  if (typeof x === 'string') return x;
+  if (typeof x === 'number' || typeof x === 'boolean') return String(x);
+  if (Array.isArray(x)) return x.map((y) => textOf(y, d + 1)).filter(Boolean).join('\n');
+  if (typeof x === 'object') for (const k of ['text', 'content', 'value', 'output', 'message', 'result', 'data', 'body', 'response', 'answer', 'url']) { const t = textOf(x[k], d + 1); if (t) return t; }
+  return '';
+};
+// Samakan bentuk respons run menjadi [{type, url | text}]. Jika tidak ada, pindai seluruh respons untuk URL gambar (kecuali input/params).
+function normalizeOutputs(run) {
+  let raw = run.outputs ?? run.output ?? run.results ?? run.result ?? [];
+  if (!Array.isArray(raw)) raw = [raw];
+  const out = [];
+  for (const o of raw.flat()) {
+    if (o == null) continue;
+    const url = outUrl(o);
+    if (url) out.push({ ...(typeof o === 'object' ? o : {}), url, type: (o && o.type) || '' });
+    else { const t = textOf(o); if (t) out.push({ type: (o && o.type) || 'text', text: t }); }
+  }
+  if (!out.length) { const t = textOf(run.output ?? run.result ?? run.text ?? run.response); if (t) out.push({ type: 'text', text: t }); }
+  if (!out.length) {
+    const found = new Set();
+    (function walk(x, d) {
+      if (x == null || d > 6) return;
+      if (typeof x === 'string') { if (/^https?:\/\/\S+\.(png|jpe?g|webp|gif|avif)(\?\S*)?$/i.test(x)) found.add(x); return; }
+      if (typeof x === 'object') for (const [k, v] of Object.entries(x)) if (!/^(inputs?|params|request)$/i.test(k)) walk(v, d + 1);
+    })(run, 0);
+    for (const u of found) out.push({ type: 'image', url: u });
+  }
+  return out;
+}
+
+function renderOutputs(parent, outputs, forceImage) {
+  for (const o of outputs || []) {
+    const v = o.url ?? o.text ?? o.content ?? '';
+    const t = (o.type || '').toLowerCase();
+    if (URL_RE.test(v)) {
+      const clean = v.split('?')[0].toLowerCase();
+      if (t.includes('video') || /\.(mp4|webm|mov)$/.test(clean)) { const x = el('video'); x.src = v; x.controls = true; x.playsInline = true; parent.append(x); }
+      else if (t.includes('audio') || /\.(mp3|wav|ogg|m4a)$/.test(clean)) { const x = el('audio'); x.src = v; x.controls = true; parent.append(x); }
+      else if (forceImage || t.includes('image') || v.startsWith('data:image/') || /\.(png|jpe?g|webp|gif|avif)$/.test(clean)) {
+        const a = el('a'); a.href = v; a.target = '_blank'; a.rel = 'noopener';
+        const i = el('img'); i.src = v; i.alt = 'Hasil'; i.referrerPolicy = 'no-referrer';
+        i.onerror = () => { // gambar gagal dimuat browser: tampilkan tautan agar tetap bisa dibuka
+          const l = el('a', '', '⚠ Gambar tidak bisa dimuat di sini — buka tautan hasil'); l.href = v; l.target = '_blank'; l.rel = 'noopener'; a.replaceWith(l);
+        };
+        a.append(i); parent.append(a);
+      }
+      else { const a = el('a', '', v); a.href = v; a.target = '_blank'; a.rel = 'noopener'; parent.append(a); }
+    } else if (v) {
+      renderRich(parent, v);
+    }
+  }
+}
+
+function renderFeed() {
+  const feed = $('#feed'); feed.replaceChildren();
+  if (!state.messages.length) {
+    const w = el('div', 'welcome');
+    w.append(el('div', 'logo', 'AI'), el('h2', '', 'Halo, saya AiKoe'), el('p', '', state.category === 'image' ? 'Pilih model gambar, tulis deskripsinya, lalu atur rasio dan kualitas.' : state.category === 'video' ? 'Pilih model video, tulis deskripsinya (boleh lampirkan gambar sebagai acuan), lalu atur rasio dan durasi.' : 'Pilih model assistant lalu mulai ngobrol.'));
+    const s = el('div', 'sugs');
+    for (const t of (state.category === 'image' ? IMG_SUGGESTIONS : state.category === 'video' ? VID_SUGGESTIONS : SUGGESTIONS)) { const b = el('button', '', t); b.onclick = () => { $('#input').value = t; $('#input').focus(); }; s.append(b); }
+    w.append(s); feed.append(w); return;
+  }
+  for (const m of state.messages) feed.append(msgNode(m));
+  feed.scrollTop = feed.scrollHeight;
+}
+
+/* ---------- Unduh hasil gambar ---------- */
+const imageUrls = (outputs, force) => (outputs || []).map((o) => ({ v: o.url ?? o.text ?? o.content ?? '', t: (o.type || '').toLowerCase() }))
+  .filter(({ v, t }) => URL_RE.test(v) && !t.includes('video') && !t.includes('audio') && (force || t.includes('image') || v.startsWith('data:image/') || /\.(png|jpe?g|webp|gif|avif)$/.test(v.split('?')[0].toLowerCase())))
+  .map(({ v }) => v);
+
+const videoUrls = (outputs) => (outputs || []).map((o) => ({ v: o.url ?? o.text ?? o.content ?? '', t: (o.type || '').toLowerCase() }))
+  .filter(({ v, t }) => URL_RE.test(v) && (t.includes('video') || /\.(mp4|webm|mov)$/.test(v.split('?')[0].toLowerCase()))).map(({ v }) => v);
+
+async function downloadImages(urls, btn, defExt = 'png') {
+  const old = btn.textContent; btn.disabled = true; btn.textContent = 'Mengunduh…';
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '');
+  let failed = false;
+  for (let i = 0; i < urls.length; i++) {
+    const ext = (urls[i].split('?')[0].match(/\.(png|jpe?g|webp|gif|avif|mp4|webm|mov)$/i) || [, defExt])[1].toLowerCase();
+    const name = `aichat-${stamp}${urls.length > 1 ? '-' + (i + 1) : ''}.${ext}`;
+    try {
+      const r = await fetch(urls[i]); if (!r.ok) throw new Error(r.status);
+      const a = el('a'); a.href = URL.createObjectURL(await r.blob()); a.download = name;
+      document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    } catch { // CORS/penyimpanan menolak fetch: buka di tab baru agar tetap bisa disimpan
+      failed = true; window.open(urls[i], '_blank', 'noopener');
+    }
+    if (i < urls.length - 1) await sleep(300);
+  }
+  btn.disabled = false; btn.textContent = failed ? '↗ Dibuka di tab baru' : '✓ Terunduh';
+  setTimeout(() => (btn.textContent = old), 2200);
+}
+
+/* ---------- Batas output: Lanjutkan & Coba lagi ringkas ---------- */
+const OUT_ERR = /output space|output token|max(imum)? ?(output )?tokens?|too long|ran out of/i;
+const textKey = (o) => ['text', 'content', 'url'].find((k) => typeof o[k] === 'string' && o[k] && !URL_RE.test(o[k]));
+const outText = (outs) => (outs || []).map((o) => { const k = textKey(o); return k ? o[k] : ''; }).filter(Boolean).join('\n');
+// Jawaban dianggap terpotong jika blok kode belum ditutup atau file HTML belum selesai
+function looksTruncated(m) {
+  if (m.kind || m.error || m.pending) return false;
+  const t = outText(m.outputs); if (!t) return false;
+  if ((t.match(/```/g) || []).length % 2) return true;
+  return /<!doctype html|<html[\s>]/i.test(t) && !/<\/html>/i.test(t);
+}
+// Sambung lanjutan ke akhir teks sebelumnya (jika terpotong di dalam blok kode, buang pembuka blok baru)
+function mergeContinuation(prev, add) {
+  const outs = (prev || []).map((o) => ({ ...o }));
+  let i = outs.length - 1; while (i >= 0 && !textKey(outs[i])) i--;
+  if (i < 0) return [...outs, { type: 'text', text: add }];
+  const k = textKey(outs[i]), old = outs[i][k];
+  if ((old.match(/```/g) || []).length % 2) add = add.replace(/^\s*```[\w+#-]*[^\n]*\n/, '');
+  outs[i][k] = old + add;
+  return outs;
+}
+function continueMsg(m) {
+  if (state.busy) return;
+  const tail = outText(m.outputs).slice(-3000);
+  send({ text: '▶ Lanjutkan', continueOf: m, prompt: `Jawaban sebelumnya terpotong karena batas panjang output. Berikut bagian akhirnya:\n<<<\n${tail}\n>>>\n\nLanjutkan TEPAT dari titik terpotong. Jangan mengulang bagian yang sudah ada dan jangan menambah pembuka atau penutup. Jika terpotong di dalam blok kode, langsung lanjutkan kodenya tanpa membuka blok kode baru, lalu selesaikan kode hingga lengkap dan tutup blok kodenya.` });
+}
+function retryShort(m) {
+  if (state.busy) return;
+  let u = null;
+  for (let j = state.messages.indexOf(m) - 1; j >= 0; j--) { const x = state.messages[j]; if (x.role === 'user' && !/^[▶↻]/.test(x.text)) { u = x; break; } }
+  if (!u) return;
+  const base = u.text.slice(0, 1500);
+  send({ text: '↻ Coba lagi lebih ringkas: ' + base.slice(0, 200), prompt: base + '\n\nCatatan: jawaban sebelumnya gagal karena melebihi batas panjang output. Buat versi yang lebih ringkas dan sederhana agar muat dalam satu jawaban; utamakan fitur inti, kurangi kode berulang dan komentar panjang.' });
+}
+// Parameter batas output milik model (jika ada) dinaikkan ke nilai maksimum yang diketahui
+const tokenParam = (m) => (m.params || []).find((p) => /^(max[_-]?(output[_-]?|completion[_-]?|new[_-]?)?tokens?|output[_-]?tokens?|max[_-]?length)$/i.test(p.name) && !optsOf(p).length && (!p.type || /int|num|float/i.test(String(p.type))));
+function tokenValue(p) {
+  const hi = [p.max, p.maximum, p.max_value, p.maxValue, p.range && p.range[1]].find((v) => typeof v === 'number');
+  if (hi != null) return hi;
+  return typeof p.default === 'number' ? Math.min(p.default * 4, 65536) : null;
+}
+
+function msgNode(m) {
+  const row = el('div', 'msg ' + (m.role === 'user' ? 'user' : 'bot'));
+  if (m.role !== 'user') row.append(el('div', 'av', 'AI'));
+  const b = el('div', 'bubble');
+  if (m.role === 'user') {
+    if (m.files && m.files.length) {
+      const fl = el('div', 'ufiles');
+      for (const f of m.files) {
+        const src = f.url || f.preview;
+        if ((f.type || '').startsWith('image/') && src) { const i = el('img'); i.src = src; i.alt = f.name; fl.append(i); }
+        else fl.append(el('div', 'ufile', iconFor(f.type, f.name) + ' ' + f.name));
+      }
+      b.append(fl);
+    }
+    b.append(document.createTextNode(m.text));
+  }
+  else if (m.pending) {
+    const t = el('div', 'typing'); t.append(el('span'), el('span'), el('span')); b.append(t);
+    const bar = el('div', 'bar'); const i = el('i'); i.style.width = Math.max(8, m.progress || 0) + '%'; bar.append(i); b.append(bar);
+    if (m.kind === 'image') b.append(el('div', 'meta', '🎨 Membuat gambar…'));
+    if (m.kind === 'video') b.append(el('div', 'meta', '🎬 Membuat video… bisa memakan beberapa menit'));
+    row.dataset.pending = '1';
+  } else if (m.error) {
+    b.append(el('div', 'err', '⚠ ' + m.error));
+    if (OUT_ERR.test(m.error) && !m.kind) {
+      const meta = el('div', 'meta'), rb = el('button', 'dl', '↻ Coba lagi lebih ringkas');
+      rb.type = 'button'; rb.onclick = () => retryShort(m); meta.append(rb); b.append(meta);
+    }
+  } else {
+    renderOutputs(b, m.outputs, m.kind === 'image');
+    if (m.debug) { // tidak ada output yang terbaca: tampilkan respons mentah untuk diagnosis
+      const d = el('details', 'dbg'); d.open = true; d.append(el('summary', '', 'Tidak ada output terbaca — respons mentah dari server'), el('pre', '', m.debug)); b.append(d);
+    }
+    if (b.querySelector('.cb')) b.classList.add('wide');
+    if (!b.childNodes.length) b.append(el('div', '', '(Tidak ada output)'));
+    const meta = el('div', 'meta');
+    if (m.model) meta.append(el('span', '', m.model));
+    if (m.applied) meta.append(el('span', '', '🎛 ' + m.applied));
+    const imgs = imageUrls(m.outputs, m.kind === 'image');
+    if (imgs.length) {
+      const dl = el('button', 'dl', imgs.length > 1 ? `⬇ Unduh (${imgs.length})` : '⬇ Unduh');
+      dl.type = 'button'; dl.title = 'Unduh hasil gambar';
+      dl.onclick = () => downloadImages(imgs, dl);
+      meta.append(dl);
+    }
+    const vids = videoUrls(m.outputs);
+    if (vids.length) {
+      const dl = el('button', 'dl', vids.length > 1 ? `⬇ Unduh (${vids.length})` : '⬇ Unduh'); dl.type = 'button'; dl.title = 'Unduh video';
+      dl.onclick = () => downloadImages(vids, dl, 'mp4'); meta.append(dl);
+    }
+    if (looksTruncated(m) && state.messages[state.messages.length - 1] === m) {
+      const cb = el('button', 'dl', '▶ Lanjutkan'); cb.type = 'button'; cb.title = 'Lanjutkan jawaban yang terpotong';
+      cb.onclick = () => continueMsg(m); meta.append(cb);
+    }
+    if (meta.childNodes.length) b.append(meta);
+  }
+  row.append(b);
+  return row;
+}
+
+/* ---------- Chat ---------- */
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+const SYS = 'Catatan format: jika pengguna meminta game, website, aplikasi, UI, animasi, atau visual, WAJIB berikan SATU file HTML lengkap (<!DOCTYPE html>, HTML + CSS + JavaScript inline, tanpa file eksternal atau CDN, jangan memakai localStorage, responsif untuk mobile dan desktop, dukung kontrol keyboard dan sentuhan untuk game; untuk game wajib ada efek suara dan musik sederhana memakai Web Audio API (oscillator, tanpa file audio), AudioContext dibuat atau di-resume saat interaksi pertama pengguna, dan sediakan tombol mute) di dalam satu blok ```html agar bisa langsung dipratinjau. Buat kode ringkas dan efisien (usahakan di bawah sekitar 400 baris, tanpa komentar panjang) agar muat dalam satu jawaban. Jangan memecah kode menjadi beberapa file. Kode lain ditaruh dalam blok kode dengan nama bahasanya.';
+
+const BUILD_RE = /\b(game|permainan|website|web|situs|aplikasi|app|ui|animasi|landing|halaman|html|css|canvas|simulasi|kalkulator|calculator|dashboard|visual|desain|snake|tetris)\b/i;
+
+// Pesan biasa dikirim apa adanya (model berperilaku normal sesuai namanya); catatan format hanya ditambahkan untuk permintaan membuat game/web/app.
+// Identitas asisten: dipasang di awal setiap prompt teks agar sapaan dijawab sebagai AiKoe (bukan nama platform di belakangnya)
+const IDENTITY = 'Instruksi: Kamu adalah AiKoe, asisten AI yang ramah. Saat menyapa atau ditanya siapa kamu, perkenalkan dirimu sebagai AiKoe. Jangan menyebut dirimu Flora atau nama platform lain. Balas dalam bahasa yang dipakai pengguna.';
+function buildPrompt(text, type, hint) {
+  const core = buildPromptCore(text, type);
+  const body = BUILD_RE.test(hint ?? text) ? SYS + '\n\n' + core : core;
+  return type === 'text' ? IDENTITY + '\n\n' + body : body;
+}
+
+function buildPromptCore(text, type) {
+  if (type !== 'text') return text;
+  const hist = state.messages.filter((m) => !m.pending && !m.error).slice(-9, -1)
+    .map((m) => {
+      const body = m.role === 'user'
+        ? m.text + (m.files && m.files.length ? ' [lampiran: ' + m.files.map((f) => f.name).join(', ') + ']' : '')
+        : (m.outputs || []).map((o) => o.text || o.content || (/^https?:/.test(o.url || '') ? '[hasil gambar]' : o.url) || '').join('\n');
+      return body.trim() ? `${m.role === 'user' ? 'User' : 'Assistant'}: ${body}`.slice(0, 800) : '';
+    }).filter(Boolean);
+  return hist.length ? `Percakapan sebelumnya:\n${hist.join('\n')}\n\nUser: ${text}\nAssistant:` : text;
+}
+
+async function send(override) {
+  const input = $('#input');
+  const m = cur();
+  const isImg = !override && state.category === 'image';
+  const isVid = !override && state.category === 'video';
+  if (state.busy) return;
+  if (isImg && !curImage()) return updateNote('Model gambar belum tersedia di workspace kamu.');
+  if (isVid && !curVideo()) return updateNote('Model video belum tersedia di workspace kamu.');
+  if (!isImg && !isVid && !m) return updateNote('Model belum dimuat. Muat ulang halaman, atau cari model lewat ikon 🔍.');
+  if (!override && state.attachments.some((a) => a.status === 'uploading')) return updateNote('Tunggu unggahan file selesai…');
+  let files = override ? [] : state.attachments.filter((a) => a.status === 'ready');
+  if (!override && (isImg || isVid)) {
+    const rc = refCaps(state.category), ok = rc.supported ? files.filter((a) => refOk(a, rc)).slice(0, rc.max) : [];
+    if (ok.length < files.length) return updateNote(`Model ini tidak bisa memakai ${files.length - ok.length} lampiran (ditandai merah). Hapus lampiran itu atau ganti model.`, 7000);
+    if (isImg && rc.required && !files.length) return updateNote(`${curImage().name} membutuhkan gambar referensi. Lampirkan dulu dengan tombol ＋.`, 6000);
+  }
+  let text = override ? override.text : input.value.trim();
+  if (!text && !files.length) return;
+  if (!text) text = isImg ? 'Buat gambar baru berdasarkan gambar referensi ini.' : isVid ? 'Buat video berdasarkan file referensi ini.' : 'Tolong analisis lampiran ini.';
+  let im = null;
+  if (isImg) {
+    const r = resolveImageModel(curImage(), files);
+    if (r.error) { state.messages.push({ role: 'assistant', model: 'AiKoe', error: r.error }); save(); renderFeed(); return; }
+    im = r.model;
+  }
+  let vm = null;
+  if (isVid) {
+    const r = resolveVideoModel(curVideo(), files);
+    if (r.note) return updateNote(r.note, 6000);
+    if (r.error) { state.messages.push({ role: 'assistant', model: 'AiKoe', error: r.error }); save(); renderFeed(); return; }
+    vm = r.model;
+  }
+  state.busy = true; $('#send').disabled = true;
+  if (!override) { input.value = ''; autoGrow(); state.attachments = state.attachments.filter((a) => a.status === 'error'); renderTray(); }
+
+  const userMsg = { role: 'user', text, ...(files.length ? { files: files.map(({ name, type, url, preview }) => ({ name, type, url, preview })) } : {}) };
+  state.messages.push(userMsg);
+  const bot = { role: 'assistant', pending: true, progress: 6, model: im ? im.name : vm ? vm.name : m.name, ...(im ? { kind: 'image' } : vm ? { kind: 'video' } : {}) };
+  state.messages.push(bot);
+  renderFeed();
+  const promptBase = override ? override.prompt : composeWithFiles(text, files);
+  const imgOpts = im ? getImageOpts(text, im) : null;
+  const vidOpts = vm ? getVideoOpts(text, vm, files) : null;
+
+  // Susun params: hanya parameter wajib ber-default (+ referensi). `minimal` = hanya referensi.
+  const buildParams = (target, mode) => {
+    const params = {};
+    if (mode === 'full' || mode === 'long') for (const p of target.params || []) {
+      if (!p.required || p.name === 'prompt' || isRefParam(p)) continue;
+      if (vm && followsRefDur(target, files) && p === videoParamMap(target.params || []).dp) continue; // jangan paksa durasi default (mis. 5 dtk)
+      if (p.default != null && typeof p.default !== 'object') params[p.name] = p.default;
+      else if (optsOf(p).length) params[p.name] = optsOf(p)[0]; // wajib tanpa default -> opsi pertama agar tidak ditolak
+    }
+    if (mode === 'long' && !im && !vm) { const tp = tokenParam(target), tv = tp ? tokenValue(tp) : null; if (tv != null) params[tp.name] = tv; }
+    Object.assign(params, vm ? vidRefParams(target, files) : refParams(target, im ? files.filter((f) => (f.type || '').startsWith('image/')) : files));
+    if (im && mode !== 'hint') Object.assign(params, applyImageOpts(target, imgOpts).params);
+    if (vm && mode !== 'hint') Object.assign(params, applyVideoOpts(target, vidOpts).params);
+    if (vm && followsRefDur(target, files)) { // motion control: durasi mengikuti video referensi
+      const dp = videoParamMap(target.params || []).dp;
+      if (dp) {
+        delete params[dp.name];
+        const sec = refVideoDur(files);
+        if (dp.required && sec) params[dp.name] = refDurValue(dp, sec);
+      }
+    }
+    return params;
+  };
+  let extra = ''; // catatan tambahan saat mencoba ulang versi ringkas
+  const submit = async (target, mode) => {
+    const params = buildParams(target, mode);
+    let imgPrompt = stripConflicts(text.replace(/^\/(gambar|image|img)\s*/i, ''), imgOpts || {}) || text, applied = '';
+    if (im) {
+      const ap = applyImageOpts(target, imgOpts);
+      // Parameter yang tidak didukung model (atau mode "hint") disampaikan lewat teks prompt
+      let hint = ap.hint, sum = ap.summary;
+      if (mode === 'hint') {
+        const all = applyImageOpts({ params: [] }, imgOpts);
+        hint = all.hint; sum = all.summary;
+      }
+      if (hint) imgPrompt += `. ${hint}`;
+      applied = sum;
+      const rf = refParams(target, files.filter((f) => (f.type || '').startsWith('image/')));
+      const rk = Object.keys(rf)[0];
+      if (rk) {
+        const n = [].concat(rf[rk]).length;
+        imgPrompt += `. ${FACE_NOTE}`;
+        applied = (applied ? applied + ' · ' : '') + `referensi ${n} gambar`;
+      }
+    }
+    let vidPrompt = text;
+    if (vm) {
+      let ap = applyVideoOpts(target, vidOpts);
+      if (mode === 'hint') ap = applyVideoOpts({ params: [] }, vidOpts); // semua opsi lewat teks prompt
+      if (ap.hint) vidPrompt += `. ${ap.hint}`;
+      applied = ap.summary;
+      const nref = Object.values(vidRefParams(target, files)).reduce((n, v) => n + [].concat(v).length, 0);
+      if (nref) applied = (applied ? applied + ' · ' : '') + `referensi ${nref} file`;
+    }
+    const body = im
+      ? { prompt: imgPrompt, type: 'image', model: target.model_id, params }
+      : vm ? { prompt: vidPrompt, type: 'video', model: target.model_id, params }
+      : { prompt: buildPrompt(promptBase + extra, 'text', text), type: 'text', model: m.model_id, params };
+    const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!r.ok) {
+      console.error('Permintaan ditolak', target.model_id, body.params, j);
+      const e = new Error(j?.error?.message || `Error ${r.status}`);
+      e.rejected = /reject|param|invalid|unsupported/i.test(e.message) || r.status === 400 || r.status === 422;
+      throw e;
+    }
+    bot.applied = applied;
+    return j;
+  };
+
+  // Kirim + tunggu hasil untuk satu model. Penolakan provider (HTTP maupun status run "failed") ditandai e.rejected.
+  const runOnce = async (target, mode) => {
+    const j = await submit(target, mode);
+    const limit = Date.now() + (vm ? 25 : 15) * 60 * 1000;
+    let fails = 0;
+    while (Date.now() < limit) {
+      await sleep(2000);
+      let run;
+      try { // gangguan jaringan/5xx sesaat tidak membatalkan run yang masih berjalan
+        const pr = await fetch('/api/runs/' + j.run_id); run = await pr.json().catch(() => ({}));
+        if (!pr.ok) { const e = new Error(run?.error?.message || `Error ${pr.status}`); e.permanent = pr.status < 500 && pr.status !== 429; throw e; }
+      } catch (e) {
+        if (e.permanent || ++fails > 6) throw new Error(e.permanent ? e.message : 'Koneksi terputus saat menunggu hasil');
+        continue;
+      }
+      fails = 0;
+      if (['completed', 'succeeded', 'success', 'done'].includes(run.status)) {
+        console.log('Run selesai', target.model_id, run);
+        bot.outputs = normalizeOutputs(run);
+        if (!bot.outputs.length || (im && !imageUrls(bot.outputs, true).length)) bot.debug = JSON.stringify(run, null, 2).slice(0, 4000);
+        return;
+      }
+      if (['failed', 'error', 'cancelled', 'canceled', 'timed_out'].includes(run.status)) {
+        console.error('Run gagal', target.model_id, run);
+        const e = new Error(run.error_message || run.error?.message || (typeof run.error === 'string' ? run.error : '') || 'Generasi gagal');
+        e.rejected = /reject|param|invalid|unsupported|not support/i.test(e.message);
+        throw e;
+      }
+      bot.progress = Math.max(bot.progress, run.progress || 0);
+      const bar = document.querySelector('[data-pending] .bar i'); if (bar) bar.style.width = Math.max(8, bot.progress) + '%';
+    }
+    throw new Error('Waktu tunggu habis');
+  };
+
+  try {
+    if (im || vm) {
+      // Coba beberapa model gambar/video; tiap model dengan params default, lalu params minimal
+      const candidates = [im || vm]; // model dipilih pengguna; tidak berpindah diam-diam
+      let lastErr;
+      outer: for (const target of candidates) {
+        bot.model = target.name; renderFeed();
+        for (const mode of ['full', 'min', 'hint']) {
+          try { await runOnce(target, mode); break outer; }
+          catch (e) { lastErr = e; bot.progress = 6; if (!e.rejected) throw e; }
+        }
+      }
+      if (!bot.outputs) throw lastErr || new Error('Tidak ada model gambar yang tersedia');
+    } else {
+      const attempt = async () => {
+        const tp = tokenParam(m), tv = tp ? tokenValue(tp) : null;
+        if (tv != null) { // coba dengan batas output maksimum; jika parameter ditolak, ulangi dengan pengaturan standar
+          try { await runOnce(m, 'long'); }
+          catch (e) {
+            if (OUT_ERR.test(e.message) || !(e.rejected || /token|param|max|limit|invalid/i.test(e.message))) throw e;
+            bot.progress = 6; await runOnce(m, 'full');
+          }
+        } else await runOnce(m, 'full');
+      };
+      try { await attempt(); }
+      catch (e) {
+        if (!OUT_ERR.test(e.message)) throw e;
+        // Jawaban melewati batas output: otomatis ulangi sekali dengan versi lebih ringkas
+        bot.progress = 6; extra = '\n\nCatatan: jawaban sebelumnya gagal karena melebihi batas panjang output. Buat versi yang lebih ringkas dan sederhana agar muat dalam satu jawaban; utamakan fitur inti, kurangi kode berulang dan komentar panjang.';
+        updateNote('Jawaban terlalu panjang — mencoba ulang versi lebih ringkas…', 8000);
+        await attempt();
+      }
+    }
+  } catch (e) { bot.error = e.message; }
+
+  // Lanjutkan: sambung hasil ke jawaban sebelumnya, lalu buang pasangan pesan sementara
+  if (override && override.continueOf && !bot.error) {
+    const add = outText(bot.outputs);
+    if (add) {
+      override.continueOf.outputs = mergeContinuation(override.continueOf.outputs, add);
+      state.messages = state.messages.filter((x) => x !== bot && x !== userMsg);
+    }
+  }
+
+  bot.pending = false; delete bot.progress;
+  save(); state.busy = false; $('#send').disabled = false; renderFeed();
+}
+
+
+
+/* ---------- Kategori Gambar: semua model gambar ---------- */
+// Kunci keluarga: nama tanpa kata penanda varian (edit / image-to-image / text-to-image), sehingga varian t2i & edit satu model digabung.
+const familyKey = (m) => String(m.name || m.model_id).toLowerCase()
+  .replace(/\b(image[\s-]*to[\s-]*image|text[\s-]*to[\s-]*image|i2i|t2i|edit(ing)?|reference|ref)\b/g, ' ')
+  .replace(/[\s._-]+/g, ' ').trim();
+
+async function loadImageModels() {
+  let all = [];
+  try {
+    const r = await fetch('/api/models?type=image'); const j = await r.json();
+    if (!r.ok) throw new Error(j?.error?.message || `Error ${r.status}`);
+    const seen = new Set();
+    all = (j.models || []).filter((m) => !m.type || m.type === 'image')
+      .filter((m) => { const k = m.model_id || m.name; if (seen.has(k)) return false; seen.add(k); return true; });
+  } catch (e) { console.warn('Gagal memuat model gambar:', e); }
+  console.info('Model gambar tersedia:', all.map((m) => `${m.name} [${m.model_id}]`));
+
+  console.table(all.map((m) => ({ model_id: m.model_id, name: m.name, capabilities: (m.capabilities || []).join(','), params: (m.params || []).map((p) => `${p.name}:${p.type}${p.required ? '*' : ''}`).join(' ') })));
+
+  // Kelompokkan semua model per keluarga; satu entri sidebar per keluarga
+  const groups = new Map();
+  for (const m of all) { const k = familyKey(m); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(m); }
+  const needsRef = (m) => (m.params || []).some((p) => p.required && isRefParam(p));
+  const found = [];
+  for (const hits of groups.values()) {
+    hits.sort((a, b) => (a.beta === true) - (b.beta === true) || a.name.length - b.name.length);
+    // utama = varian teks-ke-gambar (tanpa parameter referensi wajib); varian edit/image-to-image dipakai saat ada gambar referensi
+    const primary = hits.find((m) => !needsRef(m)) || hits[0];
+    primary._variants = hits;
+    found.push(primary);
+  }
+  found.sort((a, b) => byNewest(newestOf(a), newestOf(b)) || a.name.localeCompare(b.name));
+  state.imageMissing = [];
+  state.imageList = found;
+  if (!curImage()) state.imageModelId = state.imageList[0]?.model_id || null;
+  store.set('aichat.imgmodel', state.imageModelId);
+}
+// Pilih varian model yang sesuai: dengan gambar referensi -> varian yang punya parameter referensi (image-to-image / edit)
+function resolveImageModel(base, files) {
+  const hasRef = files.some((f) => (f.type || '').startsWith('image/') && f.url);
+  const vs = base._variants || [base];
+  const idTxt = (m) => `${m.model_id} ${m.name} ${(m.capabilities || []).join(' ')}`;
+  const isEdit = (m) => /i2i|edit|image-to-image|reference/i.test(idTxt(m));
+  if (!hasRef) {
+    const t2i = vs.filter((m) => !(m.params || []).some((p) => p.required && isRefParam(p)));
+    return { model: t2i.sort((a, b) => (isEdit(a) ? 1 : 0) - (isEdit(b) ? 1 : 0))[0] || base };
+  }
+  const withRef = vs.filter((m) => refParam(m)).sort((a, b) => (isEdit(b) ? 1 : 0) - (isEdit(a) ? 1 : 0) || a.name.length - b.name.length);
+  if (withRef.length) return { model: withRef[0] };
+  const diag = vs.map((m) => `• ${m.model_id} — params: ${(m.params || []).map((p) => `${p.name}:${p.type}${p.required ? '*' : ''}`).join(', ') || '(kosong)'}`).join('\n');
+  return { error: `${base.name} tidak punya varian yang menerima gambar referensi di workspace kamu, jadi gambar yang diunggah tidak bisa dipakai.\n\nVarian yang ditemukan:\n${diag}\n\nSalin teks ini jika perlu bantuan menyesuaikan nama parameter referensinya.` };
+}
+const curImage = () => state.imageList.find((m) => m.model_id === state.imageModelId) || state.imageList[0] || null;
+
+/* ---------- Opsi gambar: rasio & kualitas dari prompt -> parameter model ---------- */
+const RATIOS = ['1:1','16:9','9:16','4:3','3:4','3:2','2:3','21:9','9:21','5:4','4:5','2:1','1:2','3:1','1:3'];
+const ratioNum = (r) => { const [a, b] = r.split(':').map(Number); return a / b; };
+
+function parseImageOpts(text) {
+  const t = text.toLowerCase(), o = {};
+  let m = t.match(/\b(\d{3,4})\s*[x×]\s*(\d{3,4})\b/);
+  if (m) { o.size = [+m[1], +m[2]]; o.ratio = nearestRatio(+m[1] / +m[2]); }
+  if (!o.ratio) {
+    m = t.match(/(?<![\d:.])(\d{1,2})\s*[:\/]\s*(\d{1,2})(?![\d:])/);
+    if (m && RATIOS.includes(`${+m[1]}:${+m[2]}`)) o.ratio = `${+m[1]}:${+m[2]}`;
+  }
+  if (!o.ratio) {
+    if (/\b(square|persegi|kotak|instagram post)\b/.test(t)) o.ratio = '1:1';
+    else if (/\b(landscape|lanskap|horizontal|widescreen|wide|youtube|thumbnail|banner|wallpaper desktop)\b/.test(t)) o.ratio = '16:9';
+    else if (/\b(portrait|potret|vertikal|vertical|story|stories|reels?|tiktok|shorts|wallpaper hp)\b/.test(t)) o.ratio = '9:16';
+  }
+  if (/\b(8k|4k|uhd|ultra\s?hd)\b/.test(t)) o.res = '4k';
+  else if (/\b(2k|qhd|1440p|high[\s-]?quality|high[\s-]?res\w*|kualitas (?:tinggi|terbaik|bagus)|resolusi tinggi|sangat detail|highly detailed|berkualitas tinggi)\b/.test(t)) o.res = '2k';
+  else if (/\b(1k|hd|full\s?hd|1080p|low[\s-]?quality|kualitas rendah|draft|standar|standard)\b/.test(t)) o.res = '1k';
+  return o;
+}
+function nearestRatio(r) { return RATIOS.reduce((b, c) => (Math.abs(Math.log(ratioNum(c) / r)) < Math.abs(Math.log(ratioNum(b) / r)) ? c : b)); }
+
+const optsOf = (p) => {
+  const raw = p.enum || p.options || p.values || p.allowed_values || p.allowedValues || p.choices || [];
+  return (Array.isArray(raw) ? raw : []).map((o) => (o && typeof o === 'object' ? (o.value ?? o.id ?? o.const ?? o.name) : o)).filter((v) => v != null);
+};
+const optRatio = (v) => {
+  v = String(v).toLowerCase();
+  const m = v.match(/(\d+(?:\.\d+)?)\s*[:x×\/]\s*(\d+(?:\.\d+)?)/);
+  if (m) return +m[1] / +m[2];
+  if (/square|persegi/.test(v)) return 1;
+  if (/landscape|wide|horizontal/.test(v)) return 16 / 9;
+  if (/portrait|tall|vertical/.test(v)) return 9 / 16;
+  return null;
+};
+const closestRatioOpt = (opts, r) => {
+  let best = null, d = Infinity;
+  for (const v of opts) { const x = optRatio(v); if (x == null) continue; const e = Math.abs(Math.log(x / r)); if (e < d) { d = e; best = v; } }
+  return best;
+};
+const kOf = (v) => { const m = String(v).match(/(\d+(?:\.\d+)?)\s*k\b/i); return m ? +m[1] : /\bhd\b/i.test(v) ? 1.5 : null; };
+function qualityOpt(opts, q) {
+  const re = { low: /low|draft|fast|turbo|basic|standard|std/i, medium: /med|normal|balanced|default/i, high: /high|hd|best|premium|pro\b/i, ultra: /ultra|max|extreme|4k/i };
+  const find = (k) => opts.find((v) => re[k].test(String(v)));
+  if (q === 'ultra') return find('ultra') ?? find('high') ?? opts[opts.length - 1];
+  if (q === 'high') return find('high') ?? find('ultra') ?? opts[opts.length - 1];
+  if (q === 'low') return find('low') ?? opts[0];
+  return find('medium') ?? opts[Math.floor((opts.length - 1) / 2)];
+}
+function resOpt(opts, o) {
+  const ks = opts.map((v) => [v, kOf(v)]).filter(([, k]) => k != null);
+  if (!ks.length || !o.res) return null;
+  const want = parseFloat(o.res);
+  return ks.reduce((b, c) => (Math.abs(c[1] - want) < Math.abs(b[1] - want) ? c : b))[0];
+}
+
+// Pilihan di panel hanya dipakai jika model (varian) yang akan dijalankan memang menyediakannya. Jika "Auto", rasio/kualitas dibaca dari prompt.
+function getImageOpts(text, model) {
+  const o = parseImageOpts(text), c = imageCaps(model), s = state.imgOpts;
+  const has = (list, v) => !!v && (list || []).some((x) => x.value === v);
+  if (has(c.ratio, s.ratio)) { o.ratio = s.ratio; delete o.size; o.pRatio = true; }
+  if (has(c.res, s.quality)) { o.res = s.quality; o.pRes = true; }
+  if (has(c.q, s.q)) { o.q = s.q; o.pQ = true; }
+  return o;
+}
+// Buang kata di prompt yang bertentangan dengan pilihan panel (mis. "16:9" saat rasio dipilih 1:1)
+function stripConflicts(text, o = {}) {
+  let t = text;
+  if (o.pRatio) t = t.replace(/(?<![\d:.])\d{1,2}\s*[:\/]\s*\d{1,2}(?![\d:])/g, (x) => (RATIOS.includes(x.replace(/\s+/g, '').replace('/', ':')) ? '' : x)).replace(/\b\d{3,4}\s*[x×]\s*\d{3,4}\b/g, '').replace(/\b(rasio|ratio|aspect ratio)\b/gi, '');
+  if (o.pRes || o.pQ) t = t.replace(/\b(4k|8k|2k|1k|uhd|ultra\s?hd|qhd|1080p|1440p|full\s?hd|hd|high[\s-]?quality|low[\s-]?quality|kualitas (?:tinggi|rendah|sedang|terbaik|bagus))\b/gi, '');
+  return t.replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1').replace(/[,\s]+$/, '').trim();
+}
+
+// Petakan opsi ke parameter yang dimiliki model. Mengembalikan params, petunjuk untuk prompt (jika tidak didukung), dan ringkasan.
+const K_PX = { '1k': 1024, '2k': 2048, '4k': 3840 };
+const wxh = (v) => { const m = String(v).match(/(\d{2,5})\s*[x×*]\s*(\d{2,5})/i); return m ? [+m[1], +m[2]] : null; };
+const sizeFromRatio = (r, long) => {
+  const q = (v) => Math.max(16, Math.floor(v / 16) * 16);
+  let w = r >= 1 ? long : long * r, h = r >= 1 ? long / r : long;
+  const cap = 3840 * 2160; // batas total piksel setara 4K 16:9
+  if (w * h > cap) { const k = Math.sqrt(cap / (w * h)); w *= k; h *= k; }
+  return [q(w), q(h)];
+};
+function bestSizeOpt(opts, ratio, long) { // pilih ukuran WxH: rasio paling tepat dulu, lalu sisi terpanjang paling dekat target
+  let best = null, d = Infinity;
+  for (const v of opts) {
+    const p = wxh(v); if (!p) continue;
+    const e = Math.abs(Math.log(p[0] / p[1] / ratio)) * 10 + (long ? Math.abs(Math.log(Math.max(...p) / long)) : 0);
+    if (e < d) { d = e; best = v; }
+  }
+  return best;
+}
+function applyImageOpts(model, o) {
+  const P = model.params || [], params = {}, hints = [], sum = [];
+  const byName = (re) => P.filter((p) => re.test(p.name));
+  const label = o.res ? o.res.toUpperCase() : '', kTarget = o.res ? K_PX[o.res] : null;
+  let ratioDone = !o.ratio, resDone = !o.res;
+
+  // 1) Resolusi berbasis K (mis. image_size / resolution: 1K, 2K, 4K)
+  if (o.res) {
+    const rp = P.find((p) => /resolution|image[_-]?size|^size$|output[_-]?size|scale/i.test(p.name) && optsOf(p).some((v) => kOf(v) != null))
+      || P.find((p) => /^resolution$/i.test(p.name) && !optsOf(p).length && p.type === 'string');
+    if (rp) { const v = optsOf(rp).length ? resOpt(optsOf(rp), o) : label; if (v != null) { params[rp.name] = v; resDone = true; sum.push(`resolusi ${v}`); } }
+  }
+
+  // 2) Rasio lewat parameter aspect_ratio
+  if (o.ratio) {
+    const ar = byName(/^(aspect[_-]?ratio|ratio|image[_-]?ratio|aspect)$/i)[0];
+    if (ar) {
+      const op = optsOf(ar);
+      const v = op.length ? (op.map(String).includes(o.ratio) ? o.ratio : closestRatioOpt(op, ratioNum(o.ratio))) : o.ratio;
+      if (v != null) { params[ar.name] = v; ratioDone = true; sum.push(`rasio ${v}`); }
+    }
+  }
+
+  // 3) Ukuran piksel WxH (jika rasio dan/atau resolusi belum bisa diatur lewat parameter di atas)
+  if (!ratioDone || !resDone) {
+    const sz = byName(/^(size|image[_-]?size|dimensions?|resolution|width_height|output[_-]?size)$/i)
+      .find((p) => !(p.name in params) && (!optsOf(p).length || optsOf(p).some((v) => wxh(v))));
+    if (sz) {
+      const op = optsOf(sz);
+      const ratio = o.ratio ? ratioNum(o.ratio) : (wxh(sz.default) ? wxh(sz.default)[0] / wxh(sz.default)[1] : 1);
+      let v;
+      if (op.length) v = o.size && !o.res && op.map(String).includes(`${o.size[0]}x${o.size[1]}`) ? `${o.size[0]}x${o.size[1]}` : bestSizeOpt(op, ratio, kTarget);
+      else if (o.size && !o.res) v = `${o.size[0]}x${o.size[1]}`;
+      else { const [w, h] = sizeFromRatio(ratio, kTarget || 1024); v = `${w}x${h}`; }
+      if (v) {
+        params[sz.name] = v; ratioDone = true; resDone = true; sum.push(`ukuran ${v}`);
+        const p = wxh(v);
+        if (kTarget && p && Math.max(...p) < kTarget * 0.7) { // ukuran terbesar yang ditawarkan model lebih kecil dari target
+          hints.push(`${label} resolution, highly detailed`); sum.push(`maks. ${Math.max(...p)}px untuk model ini`);
+        }
+      }
+    }
+  }
+
+  // 4) Parameter quality: pilihan langsung dari panel (o.q); tanpa itu, dan bila resolusi tidak bisa diatur lewat parameter lain, ikuti resolusi
+  const qp = byName(/^(quality|image[_-]?quality|render[_-]?quality)$/i)[0];
+  if (qp) {
+    const op = optsOf(qp);
+    if (o.q != null && o.q !== '') { const v = op.find((x) => String(x) === String(o.q)) ?? o.q; params[qp.name] = v; sum.push(`kualitas ${v}`); }
+    else if (o.res && !resDone) {
+      const k = parseFloat(o.res), lv = k <= 1.25 ? 'medium' : k <= 2.5 ? 'high' : 'ultra';
+      const v = op.length ? qualityOpt(op, lv) : (lv === 'medium' ? 'medium' : 'high');
+      if (v != null) { params[qp.name] = v; resDone = true; sum.push(`kualitas ${v}`); }
+    }
+  }
+
+  // 5) Yang tidak didukung parameter model -> lewat teks prompt
+  if (!ratioDone) { hints.push(`aspect ratio ${o.ratio}`); sum.push(`rasio ${o.ratio} (via prompt)`); }
+  if (!resDone) {
+    hints.push(`${label}, ${o.res === '4k' ? 'ultra high resolution, highly detailed' : o.res === '2k' ? 'high resolution, detailed' : 'standard resolution'}`);
+    sum.push(`resolusi ${label} (via prompt)`);
+  }
+  return { params, hint: hints.join(', '), summary: sum.join(' · ') };
+}
+
+/* ---------- Lampiran (multi-file) ---------- */
+const MAX_FILES = 10, MAX_SIZE = 20 * 1024 * 1024, MAX_TEXT = 30000;
+const TEXT_EXT = /\.(txt|md|markdown|csv|tsv|json|jsonl|xml|ya?ml|toml|ini|log|html?|css|jsx?|tsx?|mjs|py|rb|php|java|kt|swift|c|h|cpp|cs|go|rs|sql|sh|bat|ps1|lua|dart|r|vue|svelte|tex|srt|env)$/i;
+const REF_RE = /^(image_urls?|images?|image_input|reference_images?|reference_image_urls?|reference_urls?|input_images?|input_image_urls?|files?|file_urls?|attachments?|assets?|asset_urls?|media_urls?|document_urls?)$/i;
+let attSeq = 0, noteT = 0;
+
+const isTextFile = (f) => (f.type || '').startsWith('text/') || /json|xml|javascript|yaml/.test(f.type || '') || TEXT_EXT.test(f.name || '');
+function iconFor(type = '', name = '') {
+  if (type.startsWith('image/')) return '🖼️';
+  if (type.startsWith('audio/')) return '🎵';
+  if (type.startsWith('video/')) return '🎬';
+  if (/pdf/.test(type) || /\.pdf$/i.test(name)) return '📕';
+  if (/sheet|excel|csv/.test(type) || /\.(xlsx?|csv)$/i.test(name)) return '📊';
+  if (/word|document|presentation|powerpoint/.test(type) || /\.(docx?|pptx?)$/i.test(name)) return '📘';
+  if (/zip|compressed|tar/.test(type) || /\.(zip|rar|7z|tar|gz)$/i.test(name)) return '🗜️';
+  if (TEXT_EXT.test(name)) return '📝';
+  return '📄';
+}
+const fmtSize = (n) => (n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(0) + ' KB' : (n / 1048576).toFixed(1) + ' MB');
+const REF_BAD = /size|ratio|quality|resolution|format|prompt|style|background|moderation|seed|count|number|steps|guidance|strength|safety|compression|output|aspect|duration|mask/i;
+const isStrType = (t) => !/^(bool|boolean|int\??|integer|float|number|seed|enum|object|json)$/i.test(String(t || ''));
+const isRefParam = (p) => isStrType(p.type) && !optsOf(p).length && !/^prompt$/i.test(p.name) && (REF_RE.test(p.name) || (!REF_BAD.test(p.name) && (
+  /(^|_)(images?|img|photos?|pictures?|references?|refs?|assets?|files?|urls?)(_|$)|^(input|source|base|init)/i.test(p.name) ||
+  /(reference|source|input|base|init)\W.{0,30}image|image.{0,30}(url|reference)|edit(ing)? image/i.test(p.description || ''))));
+const refParam = (m) => (m.params || []).find((x) => REF_RE.test(x.name) && isRefParam(x)) || (m.params || []).find(isRefParam)
+  // cadangan: parameter array wajib selain prompt dianggap referensi
+  || (m.params || []).find((x) => x.required && /\[\]$/.test(String(x.type)) && !optsOf(x).length && !REF_BAD.test(x.name));
+
+function refParams(m, files) {
+  const out = {}, urls = files.filter((f) => f.url), p = refParam(m);
+  if (!urls.length || !p) return out;
+  const list = /image|img|photo|picture|ref/i.test(p.name) ? urls.filter((f) => (f.type || '').startsWith('image/')) : urls;
+  if (list.length) out[p.name] = /\[\]$/.test(String(p.type)) ? list.map((f) => f.url) : list[0].url;
+  return out;
+}
+
+/* ---------- Kategori Video: semua model video ---------- */
+// Kunci keluarga: nama tanpa penanda varian (text-to-video / image-to-video / i2v / t2v ...), sehingga varian satu model digabung jadi satu entri.
+const V_VARIANT_RE = /\b(image[\s-]*to[\s-]*video|text[\s-]*to[\s-]*video|video[\s-]*to[\s-]*video|img[\s-]*to[\s-]*vid(eo)?|i2v|t2v|v2v|first[\s-]*(and[\s-]*last[\s-]*)?frame|reference|ref)\b/gi;
+const vFamilyKey = (m) => String(m.name || m.model_id).toLowerCase()
+  .replace(V_VARIANT_RE, ' ').replace(/[()\[\]]/g, ' ').replace(/[\s._-]+/g, ' ').trim();
+// Nama tampilan keluarga: nama asli tanpa penanda varian (mis. "Kling 2.5 Text to Video" -> "Kling 2.5")
+const vLabel = (m) => String(m.name || m.model_id).replace(V_VARIANT_RE, ' ').replace(/\(\s*\)|\[\s*\]/g, ' ').replace(/\s+/g, ' ').replace(/[\s\-–—:|/]+$/, '').replace(/^[\s\-–—:|/]+/, '').trim() || String(m.name || m.model_id);
+
+const fileKind = (f) => { const t = f.type || ''; return t.startsWith('image/') ? 'image' : t.startsWith('video/') ? 'video' : t.startsWith('audio/') ? 'audio' : 'file'; };
+const paramKind = (p) => { const s = `${p.name} ${p.description || ''}`; return /video|clip/i.test(p.name) ? 'video' : /audio|voice|sound|music|speech/i.test(p.name) ? 'audio' : /image|img|photo|picture|frame|ref/i.test(s) ? 'image' : 'any'; };
+const isVidRef = (p) => isStrType(p.type) && !optsOf(p).length && !/^prompt$/i.test(p.name)
+  && (REF_RE.test(p.name) || (!REF_BAD.test(p.name) && /(image|img|photo|picture|frame|reference|ref|video|clip|audio|voice|sound|file|asset|media|source|input|init|url)/i.test(p.name)));
+
+// Petakan file lampiran (gambar/video/audio) ke parameter referensi model video
+function vidRefParams(m, files) {
+  const out = {}, ready = files.filter((f) => f.url), used = new Set();
+  for (const p of (m.params || []).filter(isVidRef)) {
+    const k = paramKind(p);
+    const cand = ready.filter((f) => !used.has(f) && (k === 'any' || fileKind(f) === k));
+    if (!cand.length) continue;
+    const isArr = /\[\]$/.test(String(p.type)), take = isArr ? cand : [cand[0]];
+    take.forEach((f) => used.add(f));
+    out[p.name] = isArr ? take.map((f) => f.url) : take[0].url;
+  }
+  return out;
+}
+const needsVidRef = (m) => (m.params || []).some((p) => p.required && isVidRef(p));
+
+// Pilih varian yang cocok: tanpa lampiran -> teks-ke-video; dengan lampiran -> varian yang menerima file tsb (image-to-video dst.)
+function resolveVideoModel(base, files) {
+  const vs = base._variants || [base];
+  const ready = files.filter((f) => f.url);
+  if (!ready.length) {
+    const t2v = vs.find((m) => !needsVidRef(m));
+    return t2v ? { model: t2v } : { note: `${base.name} membutuhkan gambar/video referensi. Lampirkan file dulu dengan tombol ＋.` };
+  }
+  const ok = vs.filter((m) => {
+    const rp = vidRefParams(m, ready);
+    return Object.keys(rp).length && (m.params || []).filter((p) => p.required && isVidRef(p)).every((p) => p.name in rp);
+  }).sort((a, b) => a.name.length - b.name.length);
+  if (ok.length) return { model: ok[0] };
+  return { error: `${base.name} tidak punya varian yang menerima file referensi yang kamu lampirkan (gambar/video/audio), jadi file itu tidak bisa dipakai. Hapus lampiran atau pilih model video lain.` };
+}
+const curVideo = () => state.videoList.find((m) => m.model_id === state.videoModelId) || state.videoList[0] || null;
+
+async function loadVideoModels() {
+  let all = [];
+  state.videoError = '';
+  try {
+    const r = await fetch('/api/models?type=video'); const j = await r.json();
+    if (!r.ok) throw new Error(j?.error?.message || `Error ${r.status}`);
+    const seen = new Set();
+    all = (j.models || []).filter((m) => !m.type || m.type === 'video')
+      .filter((m) => { const k = m.model_id || m.name; if (seen.has(k)) return false; seen.add(k); return true; });
+  } catch (e) { state.videoError = e.message || 'Gagal memuat model video'; console.warn('Gagal memuat model video:', e); }
+  console.table(all.map((m) => ({ model_id: m.model_id, name: m.name, params: (m.params || []).map((p) => `${p.name}:${p.type}${p.required ? '*' : ''}`).join(' ') })));
+  const groups = new Map();
+  for (const m of all) { const k = vFamilyKey(m); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(m); }
+  const found = [];
+  for (const hits of groups.values()) {
+    hits.sort((a, b) => (a.beta === true) - (b.beta === true) || String(a.name).length - String(b.name).length);
+    const primary = hits.find((m) => !needsVidRef(m)) || hits[0];
+    primary._variants = hits; primary._label = vLabel(primary);
+    found.push(primary);
+  }
+  found.sort((a, b) => byNewest(newestOf(a), newestOf(b)) || String(a.name).localeCompare(String(b.name)));
+  state.videoList = found;
+  if (!curVideo()) state.videoModelId = state.videoList[0]?.model_id || null;
+  store.set('aichat.vidmodel', state.videoModelId);
+}
+
+// Opsi video: rasio, durasi & kualitas (dari panel atau teks prompt) -> parameter model; yang tak didukung model disampaikan lewat teks prompt
+function videoParamMap(ps) {
+  return {
+    ar: ps.find((x) => /aspect|(^|[_-])ratio([_-]|$)/i.test(x.name) && isStrType(x.type)) || null, // bukan "du-ratio-n"
+    dp: ps.find((x) => /duration|length|seconds|secs/i.test(x.name) && !/prompt/i.test(x.name)) || null,
+    rp: ps.find((x) => /^(resolution|video[_-]?resolution|quality|video[_-]?quality)$/i.test(x.name) && optsOf(x).length) || null,
+  };
+}
+// Model "motion control" (Kling Motion dst.): durasi hasil HARUS mengikuti video referensi, jadi durasi tidak boleh dikirim/dipaksa.
+const isMotionModel = (m) => !!m && /motion/i.test(`${m.name || ''} ${m.model_id || ''}`);
+const followsRefDur = (m, files) => isMotionModel(m) && (files || []).some((f) => fileKind(f) === 'video');
+const refVideoDur = (files) => { const f = (files || []).find((x) => fileKind(x) === 'video' && x.duration > 0); return f ? f.duration : null; };
+// Baca durasi video di browser (dipakai hanya jika model motion mewajibkan parameter durasi)
+function probeDuration(a) {
+  return new Promise((res) => {
+    const v = document.createElement('video'), u = URL.createObjectURL(a.file);
+    const done = (d) => { URL.revokeObjectURL(u); v.removeAttribute('src'); res(d); };
+    v.preload = 'metadata';
+    v.onloadedmetadata = () => done(isFinite(v.duration) ? v.duration : 0);
+    v.onerror = () => done(0);
+    v.src = u;
+  });
+}
+// Isi parameter durasi wajib dengan durasi video referensi (opsi terdekat jika berupa daftar pilihan)
+function refDurValue(dp, sec) {
+  const op = optsOf(dp);
+  if (op.length) {
+    let best = null, d = Infinity;
+    for (const c of op) { const n = parseFloat(String(c).replace(/[^\d.]/g, '')); if (isNaN(n)) continue; if (Math.abs(n - sec) < d) { d = Math.abs(n - sec); best = c; } }
+    return best;
+  }
+  if (/int/i.test(String(dp.type))) return Math.round(sec);
+  if (/num|float/i.test(String(dp.type))) return +sec.toFixed(2);
+  return String(Math.round(sec));
+}
+function getVideoOpts(text, model, files) {
+  const c = videoCaps(model), s = state.vidOpts, t = text.toLowerCase();
+  const has = (list, v) => !!v && (list || []).some((x) => x.value === v);
+  const o = { ratio: has(c.ratio, s.ratio) ? s.ratio : '', dur: has(c.dur, s.dur) && !followsRefDur(model, files) ? s.dur : '', res: has(c.res, s.res) ? s.res : '' };
+  if (!o.ratio) { const r = parseImageOpts(text).ratio; if (r) o.ratio = r; }
+  if (!o.dur && !followsRefDur(model, files)) { const m = t.match(/(?<![\d:.])(\d{1,2})\s*(?:detik|dtk|sec(?:ond)?s?|s)\b/); if (m && +m[1] >= 1 && +m[1] <= 60) o.dur = m[1]; }
+  return o;
+}
+function applyVideoOpts(m, o) {
+  const params = {}, hints = [], sum = [], { ar, dp, rp } = videoParamMap(m.params || []);
+  if (o.ratio) {
+    let v = null;
+    if (ar) {
+      const op = optsOf(ar);
+      v = op.length ? (op.find((x) => String(x) === o.ratio) ?? closestRatioOpt(op, ratioNum(o.ratio)) ?? null) : o.ratio;
+    }
+    if (v != null) { params[ar.name] = v; sum.push(`rasio ${v}`); }
+    else { hints.push(`aspect ratio ${o.ratio}`); sum.push(`rasio ${o.ratio} (via prompt)`); }
+  }
+  if (o.dur) {
+    const want = +o.dur; let v = null;
+    if (dp) {
+      const op = optsOf(dp);
+      if (op.length) {
+        let d = Infinity;
+        for (const c of op) { const n = parseFloat(String(c).replace(/[^\d.]/g, '')); if (isNaN(n)) continue; if (Math.abs(n - want) < d) { d = Math.abs(n - want); v = c; } }
+      } else if (/int|num|float/i.test(String(dp.type))) {
+        v = want; const lo = dp.min ?? dp.minimum, hi = dp.max ?? dp.maximum;
+        if (typeof lo === 'number') v = Math.max(v, lo); if (typeof hi === 'number') v = Math.min(v, hi);
+      } else v = String(want);
+    }
+    if (v != null) { params[dp.name] = v; sum.push(`durasi ${v}`); }
+    else { hints.push(`video duration about ${want} seconds`); sum.push(`durasi ${want} dtk (via prompt)`); }
+  }
+  if (o.res && rp) {
+    const v = optsOf(rp).find((x) => String(x) === o.res);
+    if (v != null) { params[rp.name] = v; sum.push(`kualitas ${v}`); }
+  }
+  return { params, hint: hints.join(', '), summary: sum.join(' · ') };
+}
+
+function composeWithFiles(text, files) {
+  if (!files.length) return text;
+  const lines = files.map((f) => (f.text != null
+    ? `- ${f.name} (isi file${f.truncated ? ', dipotong' : ''}):\n<<<\n${f.text}\n>>>`
+    : `- ${f.name} (${f.type || 'file'}): ${f.url}`));
+  return `Referensi dari pengguna:\n${lines.join('\n')}\n\nPermintaan: ${text}`;
+}
+
+function updateNote(msg, ms = 3500) {
+  const n = $('#attNote');
+  if (msg) { n.textContent = msg; n.hidden = false; clearTimeout(noteT); noteT = setTimeout(() => updateNote(), ms); return; }
+  n.hidden = true;
+}
+
+function renderTray() {
+  const tray = $('#tray'); tray.replaceChildren();
+  tray.hidden = !state.attachments.length;
+  const rc = refCaps(state.category); let n = 0;
+  for (const a of state.attachments) {
+    const okKind = refOk(a, rc), over = okKind && ++n > rc.max;
+    const warn = a.status === 'ready' ? (!okKind ? 'Tidak didukung model ini' : over ? 'Melebihi batas model' : '') : '';
+    const c = el('div', 'att' + (a.status === 'error' || warn ? ' bad' : ''));
+    if (a.preview) { const i = el('img'); i.src = a.preview; i.alt = ''; c.append(i); } else c.append(el('div', 'ficon', iconFor(a.type, a.name)));
+    const t = el('div', 'ainfo'); t.append(el('b', '', a.name), el('small', '', a.status === 'uploading' ? 'Mengunggah…' : a.status === 'error' ? (a.error || 'Gagal') : (warn || fmtSize(a.size))));
+    const x = el('button', 'ax', '✕'); x.type = 'button'; x.setAttribute('aria-label', 'Hapus ' + a.name);
+    x.onclick = () => { state.attachments = state.attachments.filter((z) => z !== a); renderTray(); updateNote(); };
+    c.append(t, x); tray.append(c);
+  }
+  renderPanel();
+}
+
+async function readText(a) {
+  try {
+    a.text = (await a.file.slice(0, 200000).text()).slice(0, MAX_TEXT);
+    a.truncated = a.size > 200000 || a.text.length >= MAX_TEXT;
+    a.status = 'ready';
+  } catch (e) { a.status = 'error'; a.error = 'Gagal membaca file'; }
+  renderTray();
+}
+
+
+const CDN = 'https://cdnjs.cloudflare.com/ajax/libs/';
+const _loaded = {};
+const loadScript = (src) => (_loaded[src] ||= new Promise((res, rej) => { const t = document.createElement('script'); t.src = src; t.onload = res; t.onerror = () => rej(new Error('Gagal memuat ' + src)); document.head.append(t); }));
+const isDoc = (f) => /\.(pdf|docx|xlsx|xls|xlsm|ods)$/i.test(f.name || '') || f.type === 'application/pdf';
+
+// Ekstrak teks dokumen di browser agar bisa dibaca semua model. Jika gagal (mis. PDF hasil scan), jatuh ke unggah + tautan.
+async function extractDoc(a) {
+  const n = a.name.toLowerCase(), buf = await a.file.arrayBuffer();
+  let out = '';
+  if (/\.pdf$/.test(n) || a.type === 'application/pdf') {
+    await loadScript(CDN + 'pdf.js/3.11.174/pdf.min.js');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = CDN + 'pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    for (let i = 1; i <= pdf.numPages && out.length < MAX_TEXT; i++) {
+      const c = await (await pdf.getPage(i)).getTextContent();
+      out += c.items.map((x) => x.str).join(' ') + '\n\n';
+    }
+  } else if (/\.docx$/.test(n)) {
+    await loadScript(CDN + 'mammoth/1.6.0/mammoth.browser.min.js');
+    out = (await mammoth.extractRawText({ arrayBuffer: buf })).value;
+  } else {
+    await loadScript(CDN + 'xlsx/0.18.5/xlsx.full.min.js');
+    const wb = XLSX.read(buf, { type: 'array' });
+    out = wb.SheetNames.map((nm) => `# Sheet: ${nm}\n` + XLSX.utils.sheet_to_csv(wb.Sheets[nm])).join('\n\n');
+  }
+  out = out.trim();
+  if (!out) return false;
+  a.truncated = out.length > MAX_TEXT; a.text = out.slice(0, MAX_TEXT);
+  return true;
+}
+
+async function uploadFile(a) {
+  try {
+    const r = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': a.type || 'application/octet-stream', 'X-File-Name': encodeURIComponent(a.name) }, body: a.file });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j?.error?.message || `Error ${r.status}`);
+    a.url = j.url; a.status = 'ready';
+  } catch (e) { a.status = 'error'; a.error = e.message; }
+  renderTray();
+}
+
+function addFiles(list) {
+  const rc = refCaps(state.category);
+  if (!rc.supported) return updateNote('Model ini tidak menerima file referensi.', 5000);
+  let all = [...list];
+  const okAll = all.filter((f) => refOk(f, rc));
+  if (okAll.length < all.length) updateNote(`Model ini hanya menerima referensi: ${rc.labels.join(', ')}.`, 5000);
+  all = okAll;
+  const room = Math.max(0, rc.max - state.attachments.filter((a) => refOk(a, rc)).length);
+  if (all.length > room) updateNote(`Maksimal ${rc.max} file referensi untuk model ini.`, 5000);
+  for (const file of all.slice(0, room)) {
+    const a = { id: ++attSeq, name: file.name || 'file', type: file.type || '', size: file.size, file, status: 'uploading' };
+    if (a.type.startsWith('image/')) a.preview = URL.createObjectURL(file);
+    if (a.type.startsWith('video/')) probeDuration(a).then((d) => { a.duration = d; });
+    state.attachments.push(a);
+    if (file.size > MAX_SIZE) { a.status = 'error'; a.error = 'Maksimal 20 MB'; }
+    else if (isTextFile(file)) readText(a);
+    else if (isDoc(file)) extractDoc(a).then((ok) => { if (ok) { a.status = 'ready'; renderTray(); } else uploadFile(a); }).catch(() => uploadFile(a));
+    else uploadFile(a);
+  }
+  renderTray();
+}
+
+$('#attach').onclick = () => $('#file').click();
+$('#file').onchange = (e) => { addFiles(e.target.files); e.target.value = ''; };
+$('#input').addEventListener('paste', (e) => { const fs = e.clipboardData && e.clipboardData.files; if (fs && fs.length) { e.preventDefault(); addFiles(fs); } });
+const mainEl = document.querySelector('.main');
+mainEl.addEventListener('dragover', (e) => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) { e.preventDefault(); mainEl.classList.add('drop'); } });
+mainEl.addEventListener('dragleave', (e) => { if (e.target === mainEl) mainEl.classList.remove('drop'); });
+mainEl.addEventListener('drop', (e) => { if (e.dataTransfer && e.dataTransfer.files.length) { e.preventDefault(); mainEl.classList.remove('drop'); addFiles(e.dataTransfer.files); } });
+
+/* ---------- Panel kontrol dinamis: opsi mengikuti parameter tiap model ---------- */
+// Setiap kontrol (rasio, resolusi/kualitas, durasi, referensi) dibangun dari daftar `params` model yang sebenarnya akan dijalankan
+// (varian text-to-X atau edit/image-to-X, tergantung ada tidaknya lampiran). Yang tidak disediakan model dinonaktifkan, bukan ditebak.
+const STD_RATIOS = ['1:1', '16:9', '9:16', '4:3', '3:4', '3:2', '2:3', '21:9'];
+const STD_VRATIOS = ['16:9', '9:16', '1:1', '4:3', '3:4', '21:9'];
+const STD_DURS = [3, 5, 8, 10, 15];
+const IMG_RATIO_RE = /^(aspect[_-]?ratio|ratio|image[_-]?ratio|aspect)$/i;
+const IMG_SIZE_RE = /^(size|image[_-]?size|dimensions?|resolution|width_height|output[_-]?size)$/i;
+const IMG_RES_RE = /resolution|image[_-]?size|^size$|output[_-]?size|scale/i;
+const IMG_QUAL_RE = /^(quality|image[_-]?quality|render[_-]?quality)$/i;
+const mkChoice = (v, label) => ({ value: String(v), label: label == null ? String(v) : String(label) });
+const uniqChoices = (arr) => { const s = new Set(); return arr.filter((c) => !s.has(c.value) && s.add(c.value)); };
+const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+const ratioFromSize = (w, h) => {
+  const r = w / h, near = RATIOS.find((x) => Math.abs(ratioNum(x) / r - 1) < 0.03);
+  if (near) return near;
+  const g = gcd(w, h); return `${w / g}:${h / g}`;
+};
+const numOf = (v) => parseFloat(String(v).replace(/[^\d.]/g, ''));
+
+// Peta parameter gambar -- aturan pemilihannya sama dengan yang dipakai applyImageOpts
+function imgParamMap(P) {
+  const by = (re) => P.filter((p) => re.test(p.name));
+  const rp = P.find((p) => IMG_RES_RE.test(p.name) && optsOf(p).some((v) => kOf(v) != null))
+    || P.find((p) => /^resolution$/i.test(p.name) && !optsOf(p).length && p.type === 'string') || null;
+  return {
+    ar: by(IMG_RATIO_RE)[0] || null,
+    rp,
+    sz: by(IMG_SIZE_RE).find((p) => p !== rp && (!optsOf(p).length || optsOf(p).some((v) => wxh(v)))) || null,
+    q: by(IMG_QUAL_RE)[0] || null,
+  };
+}
+
+function imageCaps(m) {
+  const c = { ratio: null, res: null, q: null };
+  if (!m) return c;
+  const { ar, rp, sz, q } = imgParamMap(m.params || []);
+  const sizes = sz ? optsOf(sz).filter((v) => wxh(v)) : [];
+  if (ar) { const op = optsOf(ar); c.ratio = (op.length ? op : STD_RATIOS).map((v) => mkChoice(v)); }
+  else if (sz) c.ratio = sizes.length ? uniqChoices(sizes.map((v) => { const [w, h] = wxh(v); return mkChoice(ratioFromSize(w, h)); })) : STD_RATIOS.map((v) => mkChoice(v));
+  if (rp) {
+    const op = optsOf(rp);
+    c.res = op.length ? uniqChoices(op.filter((v) => kOf(v) != null).map((v) => mkChoice(`${kOf(v)}k`, v))) : ['1k', '2k', '4k'].map((k) => mkChoice(k, k.toUpperCase()));
+  } else if (sz) {
+    const mx = sizes.length ? Math.max(...sizes.map((v) => Math.max(...wxh(v)))) : Infinity;
+    const tiers = ['1k', '2k', '4k'].filter((k) => mx >= 0.9 * K_PX[k]); // hanya tingkat yang benar-benar bisa dicapai ukuran terbesar model
+    c.res = tiers.length ? tiers.map((k) => mkChoice(k, k.toUpperCase())) : null;
+  }
+  if (q) { const op = optsOf(q); c.q = (op.length ? op : ['low', 'medium', 'high']).map((v) => mkChoice(v)); }
+  return c;
+}
+
+function durChoices(p) {
+  const lab = (v) => mkChoice(v, `${v} dtk`);
+  const op = optsOf(p);
+  if (op.length) return uniqChoices(op.map(numOf).filter((n) => !isNaN(n)).map(lab));
+  const lo = p.min ?? p.minimum, hi = p.max ?? p.maximum, step = p.step ?? p.multipleOf ?? 1;
+  if (typeof lo === 'number' && typeof hi === 'number' && hi > lo && step > 0) {
+    const all = []; for (let v = lo; v <= hi + 1e-9; v += step) all.push(+v.toFixed(2));
+    const pick = all.length > 10 ? [...new Set(Array.from({ length: 8 }, (_, i) => all[Math.round(i * (all.length - 1) / 7)]))] : all;
+    return pick.map(lab);
+  }
+  return STD_DURS.map(lab);
+}
+
+function videoCaps(m) {
+  const c = { ratio: null, dur: null, res: null };
+  if (!m) return c;
+  const { ar, dp, rp } = videoParamMap(m.params || []);
+  if (ar) { const op = optsOf(ar); c.ratio = (op.length ? op : STD_VRATIOS).map((v) => mkChoice(v)); }
+  if (dp) c.dur = durChoices(dp);
+  if (rp) c.res = optsOf(rp).map((v) => mkChoice(v));
+  return c;
+}
+
+// Referensi: tipe file yang diterima, jumlah maksimum, dan apakah wajib -- dari semua varian keluarga model
+const KIND_LABEL = { image: 'gambar', video: 'video', audio: 'audio' };
+const argLimit = (p) => {
+  const n = [p.max_items, p.maxItems, p.max, p.maximum, p.max_length, p.maxLength].find((x) => typeof x === 'number' && x > 0);
+  if (n) return n;
+  const m = String(p.description || '').match(/(?:up to|max(?:imum)?(?: of)?|at most)\s*(\d{1,2})\b/i);
+  return m ? +m[1] : null;
+};
+function refCaps(cat) {
+  if (cat !== 'image' && cat !== 'video') return { supported: true, any: true, max: MAX_FILES, kinds: null, labels: [], required: false, accept: '' };
+  const base = cat === 'image' ? curImage() : curVideo();
+  const kinds = new Set(); let max = 0, optional = false;
+  for (const v of base ? (base._variants || [base]) : []) {
+    const ps = cat === 'image' ? [refParam(v)].filter(Boolean) : (v.params || []).filter(isVidRef);
+    const needs = cat === 'image' ? (v.params || []).some((p) => p.required && isRefParam(p)) : needsVidRef(v);
+    if (!needs) optional = true;
+    let n = 0;
+    for (const p of ps) {
+      const k = cat === 'image' ? 'image' : paramKind(p);
+      (k === 'any' ? ['image', 'video', 'audio'] : [k]).forEach((x) => kinds.add(x));
+      n += /\[\]$/.test(String(p.type)) ? Math.min(argLimit(p) || MAX_FILES, MAX_FILES) : 1;
+    }
+    max = Math.max(max, n);
+  }
+  return { supported: max > 0, any: false, max, kinds, labels: [...kinds].map((k) => KIND_LABEL[k]), required: max > 0 && !optional, accept: [...kinds].map((k) => k + '/*').join(',') };
+}
+const refOk = (f, rc) => rc.supported && (rc.any || rc.kinds.has(fileKind(f)));
+
+// Model yang benar-benar akan dijalankan untuk kategori ini, mengingat lampiran saat ini
+function effModel(cat) {
+  const base = cat === 'image' ? curImage() : cat === 'video' ? curVideo() : null;
+  if (!base) return null;
+  const rc = refCaps(cat);
+  const ready = state.attachments.filter((a) => a.status === 'ready' && a.url && refOk(a, rc)).slice(0, rc.max);
+  const r = cat === 'image' ? resolveImageModel(base, ready) : resolveVideoModel(base, ready);
+  return r.model || base;
+}
+
+function fillSelect(sel, choices, cur, off, why) {
+  const on = !!(choices && choices.length);
+  sel.replaceChildren(new Option(on ? 'Auto' : off, ''));
+  for (const c of choices || []) sel.append(new Option(c.label, c.value));
+  sel.value = on && choices.some((c) => c.value === cur) ? cur : ''; // pilihan tersimpan yang tak berlaku di model ini tampil sebagai Auto
+  sel.disabled = !on;
+  sel.title = on ? '' : why;
+}
+
+function renderPanel() {
+  const cat = state.category, rc = refCaps(cat), m = effModel(cat);
+  const off = m ? 'Tidak didukung' : '—', why = m ? `${m._label || m.name} tidak punya pengaturan ini` : '';
+  if (cat === 'image') {
+    const c = imageCaps(m);
+    fillSelect($('#selRatio'), c.ratio, state.imgOpts.ratio, off, why);
+    fillSelect($('#selQ'), c.res, state.imgOpts.quality, off, why);
+    fillSelect($('#selQP'), c.q, state.imgOpts.q, off, why);
+    $('#lQ').hidden = !c.q; $('#lRes').hidden = !c.res && !!c.q;
+    $('#lResT').textContent = c.q ? 'Resolusi' : 'Kualitas';
+  } else if (cat === 'video') {
+    const c = videoCaps(m);
+    fillSelect($('#selVRatio'), c.ratio, state.vidOpts.ratio, off, why);
+    const follow = followsRefDur(m, state.attachments.filter((a) => a.status === 'ready'));
+    if (follow) { fillSelect($('#selVDur'), null, '', 'Ikut video referensi', ''); $('#selVDur').title = 'Durasi hasil mengikuti video referensi yang diunggah'; }
+    else fillSelect($('#selVDur'), c.dur, state.vidOpts.dur, off, why);
+    fillSelect($('#selVRes'), c.res, state.vidOpts.res, off, why);
+    $('#lVRes').hidden = !c.res;
+  }
+  const info = !m && cat !== 'chat' ? '' : !rc.supported ? '📎 Referensi: tidak didukung model ini' : `📎 Referensi: ${rc.labels.join('/')} · maks ${rc.max}${rc.required ? ' · wajib' : ''}`;
+  if (cat === 'image') $('#imgRef').textContent = info; else if (cat === 'video') $('#vidRef').textContent = info;
+  const at = $('#attach');
+  at.disabled = !rc.supported;
+  at.title = !rc.supported ? 'Model ini tidak menerima file referensi' : rc.any ? 'Lampirkan referensi (gambar, dokumen, dll.)' : `Lampirkan referensi (${rc.labels.join('/')}, maks ${rc.max})`;
+  const fi = $('#file'); fi.accept = rc.accept; fi.multiple = rc.max > 1;
+}
+
+function logCaps() { // ringkasan kemampuan tiap model di console, untuk memeriksa pemetaan parameter dari API
+  const ids = (l) => (l ? l.map((x) => x.value).join(' ') : '—');
+  console.table([...state.imageList.map((m) => [m, imageCaps(m)]), ...state.videoList.map((m) => [m, videoCaps(m)])]
+    .map(([m, c]) => ({ model: m._label || m.name, rasio: ids(c.ratio), resolusi: ids(c.res), kualitas: ids(c.q), durasi: ids(c.dur) })));
+}
+
+/* ---------- Events ---------- */
+function autoGrow() { const t = $('#input'); t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 260) + 'px'; }
+$('#input').addEventListener('input', autoGrow);
+$('#input').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); } });
+$('#send').onclick = () => send();
+if (!/^\d+(\.\d+)?k$/.test(state.imgOpts.quality)) state.imgOpts.quality = '';
+const saveImg = () => store.set('aichat.imgopts', state.imgOpts), saveVid = () => store.set('aichat.vidopts', state.vidOpts);
+$('#selRatio').onchange = (e) => { state.imgOpts.ratio = e.target.value; saveImg(); };
+$('#selQ').onchange = (e) => { state.imgOpts.quality = e.target.value; saveImg(); };
+$('#selQP').onchange = (e) => { state.imgOpts.q = e.target.value; saveImg(); };
+$('#selVRatio').onchange = (e) => { state.vidOpts.ratio = e.target.value; saveVid(); };
+$('#selVDur').onchange = (e) => { state.vidOpts.dur = e.target.value; saveVid(); };
+$('#selVRes').onchange = (e) => { state.vidOpts.res = e.target.value; saveVid(); };
+$('#q').addEventListener('input', (e) => { state.query = e.target.value; renderModels(); });
+// Pencarian model: daftar model tersembunyi, hanya muncul lewat ikon 🔍
+function openModelSearch() {
+  if (!$('#histModal').hidden) closeHistory();
+  state.query = ''; $('#q').value = ''; renderModels();
+  $('#modelModal').hidden = false; document.body.classList.remove('open');
+  setTimeout(() => $('#q').focus(), 0);
+}
+function closeModelSearch() { $('#modelModal').hidden = true; state.query = ''; $('#q').value = ''; renderModels(); }
+$('#msearch').onclick = openModelSearch;
+$('#mClose').onclick = closeModelSearch;
+$('#modelModal').addEventListener('mousedown', (e) => { if (e.target.id === 'modelModal') closeModelSearch(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('#modelModal').hidden) closeModelSearch();
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openModelSearch(); }
+});
+// Chat baru: percakapan lama tetap tersimpan di riwayat
+function newConv() {
+  if (state.busy) return;
+  state.messages = []; state.convId = null;
+  store.set('aichat.convid', null); store.set('aichat.messages', []);
+  renderFeed(); document.body.classList.remove('open');
+}
+$('#newChat').onclick = newConv;
+// Tong sampah: hanya mengosongkan layar chat; percakapannya tetap tersimpan di riwayat
+$('#clear').onclick = newConv;
+
+const fmtDate = (t) => new Date(t).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+function renderHistory() {
+  const list = $('#histList'); list.replaceChildren();
+  $('#histClear').hidden = !state.history.length;
+  if (!state.history.length) return list.append(el('div', 'empty-models', 'Belum ada riwayat percakapan'));
+  for (const h of state.history) {
+    const row = el('div', 'hitem' + (h.id === state.convId ? ' on' : ''));
+    row.tabIndex = 0; row.setAttribute('role', 'button');
+    const t = el('div', 'ht');
+    t.append(el('b', '', h.title), el('small', '', `${fmtDate(h.ts)} · ${h.messages.filter((m) => m.role === 'user').length} pesan`));
+    const del = el('button', 'hdel', '🗑'); del.type = 'button'; del.title = 'Hapus dari riwayat'; del.setAttribute('aria-label', 'Hapus ' + h.title);
+    del.onclick = (e) => { e.stopPropagation(); delHistory(h.id); };
+    row.append(el('span', 'hi', h.cat === 'image' ? '🎨' : '💬'), t, del);
+    row.onclick = () => openConv(h.id);
+    row.onkeydown = (e) => { if (e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openConv(h.id); } };
+    list.append(row);
+  }
+}
+function openConv(id) {
+  if (state.busy) return updateNote('Tunggu respons selesai dulu…');
+  const h = state.history.find((x) => x.id === id); if (!h) return;
+  state.convId = id; store.set('aichat.convid', id);
+  state.messages = JSON.parse(JSON.stringify(h.messages));
+  store.set('aichat.messages', state.messages);
+  closeHistory();
+  if (h.cat && h.cat !== state.category) setCategory(h.cat);
+  renderFeed(); document.body.classList.remove('open');
+}
+function delHistory(id) {
+  if (state.busy && id === state.convId) return updateNote('Tunggu respons selesai dulu…');
+  state.history = state.history.filter((h) => h.id !== id); persistHistory();
+  if (id === state.convId) newConv();
+  renderHistory();
+}
+function openHistory() { if (!$('#modelModal').hidden) closeModelSearch(); renderHistory(); $('#histModal').hidden = false; document.body.classList.remove('open'); }
+function closeHistory() { $('#histModal').hidden = true; }
+$('#hist').onclick = openHistory;
+$('#histClose').onclick = closeHistory;
+$('#histModal').addEventListener('mousedown', (e) => { if (e.target.id === 'histModal') closeHistory(); });
+$('#histClear').onclick = () => {
+  if (state.busy || !confirm('Hapus semua riwayat percakapan?')) return;
+  state.history = []; persistHistory(); newConv(); renderHistory();
+};
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#histModal').hidden) closeHistory(); });
+
+// pesan pending yang tersisa dari sesi lama dibersihkan
+state.messages = state.messages.filter((m) => !m.pending);
+if (state.messages.length && !state.convId) save(); // percakapan lama (sebelum fitur riwayat) masuk ke riwayat
+$('#imgBar').hidden = state.category !== 'image'; $('#vidBar').hidden = state.category !== 'video';
+renderFeed(); loadModels();
+</script>
+</body>
+</html>
